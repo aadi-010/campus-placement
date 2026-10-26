@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Profile &amp; Settings — CampusPrep{% endblock %}
+{% block breadcrumb %}Profile &amp; Settings{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Profile &amp; Settings</h1>
+        <p class="page-subtitle">Manage your student credentials, college details, and daily placement goals.</p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1000px;">
+    <!-- Profile Info Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 style="font-size: 1.1rem;">Personal Information</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('auth.profile') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="update_profile">
+
+                <div class="form-group">
+                    <label class="form-label" for="full_name">Full Name</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ current_user.full_name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" class="form-control" id="email" value="{{ current_user.email }}" disabled style="background:#F2F5F9; cursor:not-allowed;">
+                    <span style="font-size: 0.74rem; color: var(--text-muted);">Email cannot be changed after registration.</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="college">College / University</label>
+                    <input type="text" class="form-control" id="college" name="college" value="{{ current_user.college or '' }}" placeholder="National Institute of Technology">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label" for="graduation_year">Graduation Year</label>
+                        <input type="number" class="form-control" id="graduation_year" name="graduation_year" value="{{ current_user.graduation_year or 2026 }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="daily_goal">Daily Questions Target</label>
+                        <input type="number" class="form-control" id="daily_goal" name="daily_goal" value="{{ current_user.daily_goal or 10 }}" min="1" max="100">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="target_role">Target Placement Role</label>
+                    <input type="text" class="form-control" id="target_role" name="target_role" value="{{ current_user.target_role or 'Software Engineer' }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+                    <i data-lucide="save"></i> Save Profile Details
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Security & Password Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 style="font-size: 1.1rem;">Change Password</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('auth.profile') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="change_password">
+
+                <div class="form-group">
+                    <label class="form-label" for="current_password">Current Password</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" required placeholder="••••••••">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="new_password">New Password</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" required placeholder="Minimum 6 characters">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirm_new_password">Confirm New Password</label>
+                    <input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" required placeholder="Repeat new password">
+                </div>
+
+                <button type="submit" class="btn btn-secondary" style="margin-top: 8px;">
+                    <i data-lucide="key"></i> Update Password
+                </button>
+            </form>
+
+            <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-light);">
+                <h4 style="font-size: 0.92rem; margin-bottom: 6px; color: var(--danger-red);">Session Management</h4>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">Log out of your current session across this browser.</p>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm" style="color: var(--danger-red);">
+                    <i data-lucide="log-out"></i> Log Out
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

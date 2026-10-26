@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — CampusPrep{% endblock %}
+{% block breadcrumb %}Student Dashboard{% endblock %}
+
+{% block content %}
+<!-- Welcome Header Section -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ time_greeting }}, {{ current_user.full_name }}!</h1>
+        <p class="page-subtitle">Every practice session brings you closer to your dream placement.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{{ url_for('aptitude.index') }}" class="btn btn-primary">
+            <i data-lucide="play"></i> Quick Practice
+        </a>
+    </div>
+</div>
+
+<!-- Dashboard Hero Banner -->
+<div class="dashboard-hero-banner">
+    <div class="dashboard-hero-content">
+        <h2>Make your next move your best move.</h2>
+        <p>Consistent daily practice across Quantitative Aptitude, Data Structures, and Core Technical Concepts drives 3.4x higher campus placement conversion.</p>
+        <a href="{{ url_for('aptitude.index') }}" class="btn btn-secondary btn-sm" style="background:#ffffff; color:var(--brand-blue); border-color:#ffffff; font-weight:700;">
+            <span>Continue Preparation</span>
+            <i data-lucide="arrow-right"></i>
+        </a>
+    </div>
+    <div style="font-size: 4rem; opacity: 0.15; display: flex; align-items: center;">
+        <i data-lucide="award" style="width: 80px; height: 80px;"></i>
+    </div>
+</div>
+
+<!-- Live Database Statistics Cards -->
+<div class="metrics-grid">
+    <div class="metric-stat-card">
+        <div class="metric-stat-header">
+            <span>Aptitude Attempted</span>
+            <div class="metric-icon-wrap" style="background: var(--brand-blue-light); color: var(--brand-blue);">
+                <i data-lucide="brain"></i>
+            </div>
+        </div>
+        <div class="metric-val">{{ aptitude_attempted_count }}</div>
+        <div class="metric-subtext">{{ readiness.aptitude.accuracy }}% overall accuracy</div>
+    </div>
+
+    <div class="metric-stat-card">
+        <div class="metric-stat-header">
+            <span>Coding Solved</span>
+            <div class="metric-icon-wrap" style="background: var(--success-light); color: var(--success-green);">
+                <i data-lucide="check-circle-2"></i>
+            </div>
+        </div>
+        <div class="metric-val">{{ coding_solved_count }}</div>
+        <div class="metric-subtext">{{ readiness.coding.submissions }} total submissions</div>
+    </div>
+
+    <div class="metric-stat-card">
+        <div class="metric-stat-header">
+            <span>Interview Reviewed</span>
+            <div class="metric-icon-wrap" style="background: var(--purple-light); color: var(--purple-accent);">
+                <i data-lucide="messages-square"></i>
+            </div>
+        </div>
+        <div class="metric-val">{{ interview_reviewed_count }}</div>
+        <div class="metric-subtext">Technical &amp; HR answers</div>
+    </div>
+
+    <div class="metric-stat-card">
+        <div class="metric-stat-header">
+            <span>Average Mock Score</span>
+            <div class="metric-icon-wrap" style="background: var(--warning-light); color: var(--warning-orange);">
+                <i data-lucide="timer"></i>
+            </div>
+        </div>
+        <div class="metric-val">{{ avg_mock_score }}%</div>
+        <div class="metric-subtext">{{ mock_tests_taken }} tests completed</div>
+    </div>
+
+    <div class="metric-stat-card">
+        <div class="metric-stat-header">
+            <span>Practice Streak</span>
+            <div class="metric-icon-wrap" style="background: #FEF7EE; color: #B45309;">
+                <i data-lucide="flame"></i>
+            </div>
+        </div>
+        <div class="metric-val">{{ current_user.current_streak }}</div>
+        <div class="metric-subtext">Days active consecutively</div>
+    </div>
+
+    <div class="metric-stat-card">
+        <div class="metric-stat-header">
+            <span>Readiness Score</span>
+            <div class="metric-icon-wrap" style="background: var(--brand-blue-light); color: var(--brand-blue);">
+                <i data-lucide="compass"></i>
+            </div>
+        </div>
+        <div class="metric-val" style="color: var(--brand-blue);">{{ readiness.overall_score }}%</div>
+        <div class="metric-subtext">Practice estimate</div>
+    </div>
+</div>
+
+<!-- Placement Readiness Score Gauge Section -->
+<div class="readiness-gauge-card">
+    <div class="gauge-circle-wrap">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#EDF2F7" stroke-width="10"></circle>
+            <!-- Circumference = 2 * PI * 50 ~= 314.16 -->
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--brand-blue)" stroke-width="10"
+                    stroke-dasharray="314.16"
+                    stroke-dashoffset="{{ 314.16 - (314.16 * readiness.overall_score / 100) }}"
+                    stroke-linecap="round"
+                    style="transition: stroke-dashoffset 0.8s ease;"></circle>
+        </svg>
+        <div class="gauge-inner-text">
+            <span class="gauge-percent">{{ readiness.overall_score }}%</span>
+            <span class="gauge-sub">Readiness</span>
+        </div>
+    </div>
+
+    <div class="readiness-details">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+            <h3>Placement Readiness Estimate</h3>
+            <span class="badge badge-blue">Target: 85%+ for Tier-1</span>
+        </div>
+        <p class="readiness-disclaimer">
+            *Transparent practice readiness estimate computed from unique aptitude questions, coding benchmarks, mock exams, and reviewed interview frameworks. Not a guaranteed outcome.
+        </p>
+
+        <div class="readiness-subcomponents">
+            <div class="subcomponent-bar">
+                <div class="subcomponent-label">
+                    <span>Aptitude</span>
+                    <span>{{ readiness.aptitude.score }}/30</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: {{ (readiness.aptitude.score / 30) * 100 }}%; background: var(--brand-blue);"></div>
+                </div>
+            </div>
+
+            <div class="subcomponent-bar">
+                <div class="subcomponent-label">
+                    <span>Coding Lab</span>
+                    <span>{{ readiness.coding.score }}/30</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: {{ (readiness.coding.score / 30) * 100 }}%; background: var(--success-green);"></div>
+                </div>
+            </div>
+
+            <div class="subcomponent-bar">
+                <div class="subcomponent-label">
+                    <span>Interviews</span>
+                    <span>{{ readiness.interview.score }}/20</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: {{ (readiness.interview.score / 20) * 100 }}%; background: var(--purple-accent);"></div>
+                </div>
+            </div>
+
+            <div class="subcomponent-bar">
+                <div class="subcomponent-label">
+                    <span>Mock Tests</span>
+                    <span>{{ readiness.mock_tests.score }}/20</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: {{ (readiness.mock_tests.score / 20) * 100 }}%; background: var(--warning-orange);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Middle Grid: Daily Goal & Recommended Next Steps -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;">
+    <!-- Daily Practice Target -->
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="target" style="width: 18px; height: 18px; color: var(--brand-blue);"></i>
+                <h3 style="font-size: 1.05rem;">Daily Practice Goal</h3>
+            </div>
+            <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">{{ today_progress_total }} / {{ daily_goal }} questions</span>
+        </div>
+        <div class="card-body">
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 14px;">
+                Maintain momentum by solving at least {{ daily_goal }} questions each day.
+            </p>
+            <div class="progress-track" style="height: 10px; margin-bottom: 12px;">
+                <div class="progress-fill" style="width: {{ daily_percentage }}%; background: {% if daily_percentage >= 100 %}var(--success-green){% else %}var(--brand-blue){% endif %};"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+                <span style="color: var(--text-muted);">{{ daily_percentage }}% achieved today</span>
+                <a href="{{ url_for('aptitude.index') }}" class="btn btn-outline-primary btn-sm">Practice Now</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommended Next Steps -->
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="sparkles" style="width: 18px; height: 18px; color: var(--purple-accent);"></i>
+                <h3 style="font-size: 1.05rem;">Recommended Next Steps</h3>
+            </div>
+            <span class="badge badge-purple">Adaptive</span>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg-primary); border-radius: 8px;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.88rem;">Practice Focus: {{ recommended_topic }}</div>
+                        <div style="font-size: 0.76rem; color: var(--text-secondary);">Strengthen your foundation in this high-frequency aptitude category</div>
+                    </div>
+                    <a href="{{ url_for('aptitude.index') }}" class="btn btn-secondary btn-sm">Start</a>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg-primary); border-radius: 8px;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.88rem;">Solve: Two Sum &amp; Hash Map Patterns</div>
+                        <div style="font-size: 0.76rem; color: var(--text-secondary);">Standard recruitment question asked across Amazon, TCS Digital, and Infosys</div>
+                    </div>
+                    <a href="{{ url_for('coding.index') }}" class="btn btn-secondary btn-sm">Solve</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4-Week Placement Roadmap -->
+<div class="card" style="margin-bottom: 28px;">
+    <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="milestone" style="width: 18px; height: 18px; color: var(--brand-blue);"></i>
+            <h3 style="font-size: 1.1rem;">4-Week Placement Readiness Roadmap</h3>
+        </div>
+        <span class="badge badge-blue">Week 2 Active</span>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+            <div style="padding: 16px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-primary);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-weight: 700; font-size: 0.82rem; color: var(--brand-blue);">WEEK 1</span>
+                    <span class="badge badge-green">Completed</span>
+                </div>
+                <h4 style="font-size: 0.95rem; margin-bottom: 6px;">Aptitude Fundamentals</h4>
+                <p style="font-size: 0.78rem; color: var(--text-secondary);">Percentages, Profit/Loss, Number Systems &amp; Logical Number Series.</p>
+            </div>
+
+            <div style="padding: 16px; border: 2px solid var(--brand-blue); border-radius: 8px; background: #FFFFFF; box-shadow: var(--shadow-sm);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-weight: 700; font-size: 0.82rem; color: var(--brand-blue);">WEEK 2</span>
+                    <span class="badge badge-blue">In Progress</span>
+                </div>
+                <h4 style="font-size: 0.95rem; margin-bottom: 6px;">Data Structures &amp; Coding</h4>
+                <p style="font-size: 0.78rem; color: var(--text-secondary);">Arrays, Strings, Two-Pointer technique, Hash Maps, and Time Complexity.</p>
+            </div>
+
+            <div style="padding: 16px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-primary);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-weight: 700; font-size: 0.82rem; color: var(--text-muted);">WEEK 3</span>
+                    <span class="badge badge-gray">Upcoming</span>
+                </div>
+                <h4 style="font-size: 0.95rem; margin-bottom: 6px;">Core CS &amp; Mock Tests</h4>
+                <p style="font-size: 0.78rem; color: var(--text-secondary);">DBMS, SQL, Operating Systems, OOP concepts &amp; timed placement mocks.</p>
+            </div>
+
+            <div style="padding: 16px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-primary);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-weight: 700; font-size: 0.82rem; color: var(--text-muted);">WEEK 4</span>
+                    <span class="badge badge-gray">Final Sprint</span>
+                </div>
+                <h4 style="font-size: 0.95rem; margin-bottom: 6px;">Interviews &amp; Company Prep</h4>
+                <p style="font-size: 0.78rem; color: var(--text-secondary);">Behavioral STAR technique, HR interview questions, resume review.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity Log -->
+<div class="card">
+    <div class="card-header">
+        <h3 style="font-size: 1.1rem;">Recent Practice Activity</h3>
+        <a href="{{ url_for('progress.index') }}" style="font-size: 0.84rem; font-weight: 600;">View All Activity &rarr;</a>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if recent_aptitude or recent_coding %}
+        <div style="display: flex; flex-direction: column;">
+            {% for item in recent_aptitude %}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border-light);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="width: 28px; height: 28px; border-radius: 50%; background: {% if item.is_correct %}var(--success-light){% else %}var(--danger-light){% endif %}; color: {% if item.is_correct %}var(--success-green){% else %}var(--danger-red){% endif %}; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">
+                        <i data-lucide="{% if item.is_correct %}check{% else %}x{% endif %}"></i>
+                    </span>
+                    <div>
+                        <div style="font-size: 0.88rem; font-weight: 600;">Aptitude Question: {{ item.question.topic }}</div>
+                        <div style="font-size: 0.76rem; color: var(--text-secondary);">{{ item.question.category }} &middot; {{ item.question.difficulty }}</div>
+                    </div>
+                </div>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">{{ item.attempted_at.strftime('%b %d, %H:%M') }}</span>
+            </div>
+            {% endfor %}
+
+            {% for sub in recent_coding %}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border-light);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="width: 28px; height: 28px; border-radius: 50%; background: {% if sub.status == 'Accepted' %}var(--success-light){% else %}var(--warning-light){% endif %}; color: {% if sub.status == 'Accepted' %}var(--success-green){% else %}var(--warning-orange){% endif %}; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">
+                        <i data-lucide="code"></i>
+                    </span>
+                    <div>
+                        <div style="font-size: 0.88rem; font-weight: 600;">Coding: {{ sub.challenge.title }}</div>
+                        <div style="font-size: 0.76rem; color: var(--text-secondary);">Status: {{ sub.status }} &middot; {{ sub.language }}</div>
+                    </div>
+                </div>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">{{ sub.submitted_at.strftime('%b %d, %H:%M') }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="padding: 30px; text-align: center; color: var(--text-secondary);">
+            <p>No recent activity recorded yet. Start your first session in the Aptitude Arena or Coding Lab!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}500 Server Error — CampusPrep{% endblock %}
+{% block content %}
+<div class="empty-state-page">
+    <div class="empty-icon-box" style="color: var(--danger-red);">
+        <i data-lucide="alert-triangle"></i>
+    </div>
+    <h2>500 — Internal Server Error</h2>
+    <p>Something unexpected occurred while processing your request. Please try again shortly.</p>
+    <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">
+        <i data-lucide="home"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

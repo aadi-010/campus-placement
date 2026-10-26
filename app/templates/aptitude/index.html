@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Aptitude Arena — CampusPrep{% endblock %}
+{% block breadcrumb %}Aptitude Arena{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Aptitude Arena</h1>
+        <p class="page-subtitle">Master Quantitative Aptitude, Logical Reasoning, and Verbal Ability with verified placement questions.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('aptitude.practice') }}" class="btn btn-primary">
+            <i data-lucide="play"></i> Start Practice Session
+        </a>
+    </div>
+</div>
+
+<!-- Category Navigation Tabs -->
+<div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px;">
+    <a href="{{ url_for('aptitude.index', category='all', difficulty=selected_difficulty) }}"
+       class="btn {% if selected_category == 'all' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+        All Categories ({{ total_questions }})
+    </a>
+    <a href="{{ url_for('aptitude.index', category='Quantitative Aptitude', difficulty=selected_difficulty) }}"
+       class="btn {% if selected_category == 'Quantitative Aptitude' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+        Quantitative Aptitude
+    </a>
+    <a href="{{ url_for('aptitude.index', category='Logical Reasoning', difficulty=selected_difficulty) }}"
+       class="btn {% if selected_category == 'Logical Reasoning' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+        Logical Reasoning
+    </a>
+    <a href="{{ url_for('aptitude.index', category='Verbal Ability', difficulty=selected_difficulty) }}"
+       class="btn {% if selected_category == 'Verbal Ability' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+        Verbal Ability
+    </a>
+</div>
+
+<!-- Search & Dropdown Filters Toolbar -->
+<form method="GET" action="{{ url_for('aptitude.index') }}" class="filter-toolbar">
+    <input type="hidden" name="category" value="{{ selected_category }}">
+
+    <div class="filter-group">
+        <div class="search-input-wrap">
+            <i data-lucide="search"></i>
+            <input type="text" name="search" class="form-control search-input" placeholder="Search topics or keywords..." value="{{ search_query }}">
+        </div>
+
+        <select name="topic" class="form-select" style="min-width: 170px;" onchange="this.form.submit()">
+            <option value="all">All Topics</option>
+            {% for t in topics %}
+            <option value="{{ t }}" {% if selected_topic == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="difficulty" class="form-select" style="min-width: 130px;" onchange="this.form.submit()">
+            <option value="all">All Difficulties</option>
+            <option value="Easy" {% if selected_difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+            <option value="Medium" {% if selected_difficulty == 'Medium' %}selected{% endif %}>Medium</option>
+            <option value="Hard" {% if selected_difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+        </select>
+    </div>
+
+    <div style="font-size: 0.85rem; color: var(--text-secondary);">
+        Showing <strong>{{ questions|length }}</strong> questions
+    </div>
+</form>
+
+<!-- Questions List Table / Cards -->
+<div class="card">
+    <div class="card-body" style="padding: 0;">
+        {% if questions %}
+        <div style="display: flex; flex-direction: column;">
+            {% for q in questions %}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border-light); gap: 16px;">
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                        <span class="badge {% if q.difficulty == 'Easy' %}badge-diff-easy{% elif q.difficulty == 'Medium' %}badge-diff-medium{% else %}badge-diff-hard{% endif %}">{{ q.difficulty }}</span>
+                        <span class="badge badge-gray">{{ q.topic }}</span>
+                        {% if q.id in attempted_dict %}
+                            {% if attempted_dict[q.id] %}
+                            <span class="badge badge-green"><i data-lucide="check"></i> Solved</span>
+                            {% else %}
+                            <span class="badge badge-red"><i data-lucide="x"></i> Review Needed</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div style="font-weight: 600; font-size: 0.96rem; color: var(--text-navy); line-height: 1.5;">
+                        Q{{ loop.index }}. {{ q.question }}
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    <button class="btn-icon btn-bookmark {% if q.id in bookmarks %}bookmarked{% endif %}" data-type="aptitude" data-id="{{ q.id }}" title="Bookmark Question">
+                        <i data-lucide="{% if q.id in bookmarks %}bookmark-check{% else %}bookmark{% endif %}"></i>
+                    </button>
+                    <a href="{{ url_for('aptitude.practice', id=q.id) }}" class="btn btn-secondary btn-sm">
+                        <span>Solve</span>
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-page">
+            <div class="empty-icon-box">
+                <i data-lucide="help-circle"></i>
+            </div>
+            <h2>No Questions Found</h2>
+            <p>No questions matched your current category or search filters. Try resetting the filters.</p>
+            <a href="{{ url_for('aptitude.index') }}" class="btn btn-secondary">Reset Filters</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

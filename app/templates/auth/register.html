@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Sign Up — CampusPrep{% endblock %}
+{% block content %}
+<div style="max-width: 500px; margin: 30px auto; padding: 20px;">
+    <div class="card" style="padding: 32px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+            <div class="brand-icon-box" style="margin: 0 auto 12px; width: 44px; height: 44px; font-size: 1.2rem;">CP</div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 6px;">Create Student Account</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Start your structured campus placement journey</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.register') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label class="form-label" for="full_name">Full Name *</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ full_name or '' }}" required placeholder="Aditya Sharma">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address *</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" required placeholder="aditya@college.edu">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                    <label class="form-label" for="password">Password *</label>
+                    <input type="password" class="form-control" id="password" name="password" required placeholder="Min 6 chars">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="confirm_password">Confirm Password *</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Repeat password">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="college">College / University Name (Optional)</label>
+                <input type="text" class="form-control" id="college" name="college" placeholder="National Institute of Technology">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                    <label class="form-label" for="graduation_year">Graduation Year</label>
+                    <select class="form-select" id="graduation_year" name="graduation_year">
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2025">2025</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="target_role">Target Role</label>
+                    <select class="form-select" id="target_role" name="target_role">
+                        <option value="Software Engineer" selected>Software Engineer</option>
+                        <option value="Frontend Developer">Frontend Developer</option>
+                        <option value="Backend Developer">Backend Developer</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                        <option value="Product Analyst">Product Analyst</option>
+                        <option value="Consultant">Consultant</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px; margin-top: 10px;">
+                <i data-lucide="user-plus"></i>
+                <span>Create Free Account</span>
+            </button>
+        </form>
+
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-light); text-align: center; font-size: 0.88rem; color: var(--text-secondary);">
+            Already have an account? <a href="{{ url_for('auth.login') }}" style="font-weight: 600;">Log in here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

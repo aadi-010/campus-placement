@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Interview Practice Mode — CampusPrep{% endblock %}
+{% block breadcrumb %}
+<a href="{{ url_for('interviews.index') }}">Interview Room</a> / Self Practice
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Interactive Interview Practice</h1>
+        <p class="page-subtitle">Type your spontaneous answer first, reveal the model answer, and compare key points.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{{ url_for('interviews.practice', category=selected_category) }}" class="btn btn-secondary btn-sm">
+            <i data-lucide="shuffle"></i> Next Random Question
+        </a>
+        <a href="{{ url_for('interviews.index') }}" class="btn btn-secondary btn-sm">
+            <i data-lucide="list"></i> Catalog
+        </a>
+    </div>
+</div>
+
+{% if question %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <div class="card" style="padding: 28px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <span class="badge badge-purple">{{ question.category }}</span>
+            <span class="badge badge-gray">{{ question.subtopic }}</span>
+            <span class="badge {% if question.difficulty == 'Easy' %}badge-diff-easy{% elif question.difficulty == 'Medium' %}badge-diff-medium{% else %}badge-diff-hard{% endif %}">{{ question.difficulty }}</span>
+        </div>
+
+        <h2 style="font-size: 1.35rem; line-height: 1.4; color: var(--text-navy); margin-bottom: 20px;">
+            {{ question.question }}
+        </h2>
+
+        <!-- Step 1: Student Types Answer -->
+        <div style="margin-bottom: 20px;">
+            <label class="form-label" for="studentPracticeAnswer" style="display: flex; justify-content: space-between;">
+                <span>Step 1: Your Spontaneous Response</span>
+                <span style="font-weight: normal; color: var(--text-muted); font-size: 0.76rem;">Practice vocalizing or typing before viewing answer</span>
+            </label>
+            <textarea class="form-control" id="studentPracticeAnswer" rows="5" placeholder="Type what you would say to the interviewer here..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+            <button class="btn btn-primary" id="btnRevealComparison">
+                <i data-lucide="eye"></i> Step 2: Reveal Model Answer &amp; Compare
+            </button>
+        </div>
+
+        <!-- Step 2: Hidden Model Answer & Key Points -->
+        <div id="comparisonDrawer" style="display: none; border-top: 1px solid var(--border-light); padding-top: 24px;">
+            <div style="background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="font-size: 1rem; color: var(--brand-blue); margin-bottom: 10px;">💡 Model Answer</h3>
+                <div style="font-size: 0.92rem; line-height: 1.6; color: var(--text-navy); margin-bottom: 16px;">
+                    {{ question.answer|replace('\n', '<br>')|safe }}
+                </div>
+
+                {% if question.key_points %}
+                <h4 style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 6px;">Key Checkpoints:</h4>
+                <ul style="padding-left: 20px; font-size: 0.86rem; line-height: 1.6; color: var(--text-navy);">
+                    {% for pt in question.key_points %}
+                    <li>{{ pt }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <!-- Personal Notes & Review Save -->
+            <div class="card" style="padding: 18px; background: #FFFFFF;">
+                <h4 style="font-size: 0.92rem; margin-bottom: 8px;">Personal Study Notes</h4>
+                <textarea class="form-control" id="personalNotesInput" rows="2" placeholder="Add personal mnemonics, projects to mention, or reminders...">{{ progress.personal_notes if progress else '' }}</textarea>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                    <button class="btn btn-success btn-sm" id="btnSavePracticeReview" data-id="{{ question.id }}">
+                        <i data-lucide="check"></i> Save Notes &amp; Mark Reviewed
+                    </button>
+                    <a href="{{ url_for('interviews.practice', category=selected_category) }}" class="btn btn-secondary btn-sm">
+                        <span>Next Question</span>
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/interview.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Company Preparation Tracks - CampusPrep{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="page-title-group">
+    <div class="breadcrumb">
+      <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Companies</span>
+    </div>
+    <h1 class="page-title">Company Preparation Tracks</h1>
+    <p class="page-subtitle">Targeted placement roadmaps, selection rounds, topic checklists, and interview guides for top campus recruiters.</p>
+  </div>
+</div>
+
+<!-- Indicative Process Disclaimer Banner -->
+<div class="banner banner-info" style="margin-bottom: var(--space-6); background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5); display: flex; align-items: flex-start; gap: var(--space-3);">
+  <i data-lucide="info" style="width: 20px; height: 20px; color: var(--color-primary); flex-shrink: 0; margin-top: 2px;"></i>
+  <div style="font-size: var(--text-sm); color: #1E40AF; line-height: 1.5;">
+    <strong>Campus Recruitment Notice:</strong> Corporate recruitment patterns and eligibility cutoffs evolve dynamically each placement season. All preparation tracks provided here are indicative patterns synthesized from verified campus placement drives to guide your targeted preparation.
+  </div>
+</div>
+
+<!-- Filter Tabs -->
+<div class="filter-bar" style="margin-bottom: var(--space-6);">
+  <div class="pill-group" id="tier-filters">
+    <button class="pill-btn active" data-tier="all">All Companies</button>
+    <button class="pill-btn" data-tier="Tech Giant">Tech Giants</button>
+    <button class="pill-btn" data-tier="Product-Based">Product-Based</button>
+    <button class="pill-btn" data-tier="Service-Based">Mass Recruiters (Service)</button>
+  </div>
+</div>
+
+<!-- Company Grid -->
+<div class="company-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-6);">
+  {% for company in companies %}
+  {% set p = progress_map.get(company.id, {'done': 0, 'total': 0, 'percentage': 0}) %}
+  <div class="card company-card" data-tier="{{ company.tier }}" style="display: flex; flex-direction: column; justify-content: space-between; transition: transform var(--transition-normal), box-shadow var(--transition-normal); border: 1px solid var(--color-border); border-radius: var(--radius-xl); overflow: hidden;">
+    <div class="card-body" style="padding: var(--space-6);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4);">
+        <div style="display: flex; align-items: center; gap: var(--space-3);">
+          <div class="company-avatar" style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: #EEF2F6; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--text-lg); color: var(--color-primary);">
+            {{ company.name[:2]|upper }}
+          </div>
+          <div>
+            <h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text-main); margin: 0;">{{ company.name }}</h3>
+            <span class="badge {% if company.tier == 'Tech Giant' %}badge-purple{% elif company.tier == 'Product-Based' %}badge-blue{% else %}badge-gray{% endif %}" style="margin-top: 4px; display: inline-block;">
+              {{ company.tier }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.5; margin-bottom: var(--space-4); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+        {{ company.overview }}
+      </p>
+
+      <!-- Key Skill Tags -->
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-5);">
+        {% for skill in company.skill_areas[:4] %}
+        <span style="font-size: var(--text-xs); background: var(--color-bg); color: var(--color-text-main); padding: 3px 8px; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+          {{ skill }}
+        </span>
+        {% endfor %}
+        {% if company.skill_areas|length > 4 %}
+        <span style="font-size: var(--text-xs); color: var(--color-text-muted); padding: 3px 6px;">
+          +{{ company.skill_areas|length - 4 }} more
+        </span>
+        {% endif %}
+      </div>
+
+      <!-- Recruitment Stages summary -->
+      <div style="font-size: var(--text-xs); color: var(--color-text-muted); display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4);">
+        <i data-lucide="layers" style="width: 14px; height: 14px;"></i>
+        <span>{{ company.recruitment_stages|length }} Recruitment Stages</span>
+      </div>
+
+      <!-- User Progress Bar -->
+      <div>
+        <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); margin-bottom: 6px;">
+          <span style="color: var(--color-text-muted);">Checklist Progress</span>
+          <span style="font-weight: 600; color: var(--color-text-main);">{{ p.done }}/{{ p.total }} ({{ p.percentage }}%)</span>
+        </div>
+        <div class="progress-bar-container" style="height: 6px; background: #E2E8F0; border-radius: 999px; overflow: hidden;">
+          <div class="progress-bar-fill" style="width: {{ p.percentage }}%; height: 100%; background: {% if p.percentage == 100 %}var(--color-success){% else %}var(--color-primary){% endif %}; transition: width 0.3s ease;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer" style="padding: var(--space-4) var(--space-6); background: #FAFBFD; border-top: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+      <a href="{{ url_for('companies.detail', slug=company.slug) }}" class="btn btn-outline" style="width: 100%; justify-content: center; gap: var(--space-2);">
+        <span>View Preparation Guide</span>
+        <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide) lucide.createIcons();
+
+  const filterBtns = document.querySelectorAll('#tier-filters .pill-btn');
+  const cards = document.querySelectorAll('.company-card');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tier = btn.dataset.tier;
+
+      cards.forEach(card => {
+        if (tier === 'all' || card.dataset.tier === tier) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+});
+</script>
+{% endblock %}

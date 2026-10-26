@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CampusPrep — Campus Placement Preparation Hub{% endblock %}</title>
+    <meta name="description" content="Prepare smarter for campus placements. Practice verified aptitude questions, solve coding challenges, prepare for technical & HR interviews, and track placement readiness.">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- Design System Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%233567D6%22/><text y=%2268%22 x=%2250%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2258%22 font-weight=%22bold%22 fill=%22white%22>CP</text></svg>">
+
+    <!-- Lucide Icons & Chart.js -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        {% if current_user.is_authenticated %}
+        <!-- Fixed Desktop Sidebar & Mobile Drawer -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon-box">CP</div>
+                <div class="brand-text">CampusPrep</div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <span class="menu-category-label">Overview</span>
+                <a href="{{ url_for('dashboard.index') }}" class="sidebar-nav-item {% if request.endpoint == 'dashboard.index' %}active{% endif %}">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <span class="menu-category-label">Practice Modules</span>
+                <a href="{{ url_for('aptitude.index') }}" class="sidebar-nav-item {% if 'aptitude' in request.endpoint %}active{% endif %}">
+                    <i data-lucide="brain"></i>
+                    <span>Aptitude Arena</span>
+                </a>
+                <a href="{{ url_for('coding.index') }}" class="sidebar-nav-item {% if 'coding' in request.endpoint %}active{% endif %}">
+                    <i data-lucide="code-2"></i>
+                    <span>Coding Lab</span>
+                </a>
+                <a href="{{ url_for('interviews.index') }}" class="sidebar-nav-item {% if 'interviews' in request.endpoint %}active{% endif %}">
+                    <i data-lucide="messages-square"></i>
+                    <span>Interview Room</span>
+                </a>
+                <a href="{{ url_for('mock_tests.index') }}" class="sidebar-nav-item {% if 'mock_tests' in request.endpoint %}active{% endif %}">
+                    <i data-lucide="timer"></i>
+                    <span>Mock Tests</span>
+                </a>
+
+                <span class="menu-category-label">Placement Prep</span>
+                <a href="{{ url_for('companies.index') }}" class="sidebar-nav-item {% if 'companies' in request.endpoint %}active{% endif %}">
+                    <i data-lucide="building-2"></i>
+                    <span>Company Tracks</span>
+                </a>
+                <a href="{{ url_for('resources.index') }}" class="sidebar-nav-item {% if 'resources' in request.endpoint %}active{% endif %}">
+                    <i data-lucide="book-marked"></i>
+                    <span>Resource Library</span>
+                </a>
+
+                <span class="menu-category-label">Analytics & Account</span>
+                <a href="{{ url_for('progress.index') }}" class="sidebar-nav-item {% if 'progress' in request.endpoint %}active{% endif %}">
+                    <i data-lucide="line-chart"></i>
+                    <span>My Progress</span>
+                </a>
+                <a href="{{ url_for('auth.profile') }}" class="sidebar-nav-item {% if request.endpoint == 'auth.profile' %}active{% endif %}">
+                    <i data-lucide="user-cog"></i>
+                    <span>Profile &amp; Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-compact-pill">
+                    <div class="user-avatar-initials">
+                        {{ current_user.full_name[:2].upper() }}
+                    </div>
+                    <div class="user-compact-info">
+                        <span class="user-name">{{ current_user.full_name }}</span>
+                        <span class="user-role">{{ current_user.target_role or 'Student' }}</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="btn-icon" title="Log Out" aria-label="Log Out">
+                    <i data-lucide="log-out"></i>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Backdrop for mobile drawer -->
+        <div id="sidebarBackdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:35;"></div>
+        {% endif %}
+
+        <!-- Main Body Content -->
+        <div class="app-main" style="{% if not current_user.is_authenticated %}margin-left:0;{% endif %}">
+            {% if current_user.is_authenticated %}
+            <!-- Topbar Header -->
+            <header class="app-topbar">
+                <div class="topbar-left">
+                    <button class="btn-icon mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Navigation">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="topbar-breadcrumbs">
+                        <span>CampusPrep</span>
+                        <span>/</span>
+                        <span class="breadcrumb-current">{% block breadcrumb %}Dashboard{% endblock %}</span>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="streak-pill" title="Current Daily Streak">
+                        <i data-lucide="flame" style="width:16px; height:16px;"></i>
+                        <span>{{ current_user.current_streak }} Day Streak</span>
+                    </div>
+                    <a href="{{ url_for('auth.profile') }}" class="btn-icon" title="Account Settings">
+                        <i data-lucide="settings"></i>
+                    </a>
+                </div>
+            </header>
+            {% endif %}
+
+            <!-- Flash Messages Notification Container -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div style="padding: 16px 28px 0 28px;">
+                    {% for category, message in messages %}
+                    <div class="card" style="padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid {% if category == 'success' %}var(--success-green){% elif category == 'danger' or category == 'error' %}var(--danger-red){% else %}var(--brand-blue){% endif %};">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i data-lucide="{% if category == 'success' %}check-circle{% elif category == 'error' or category == 'danger' %}alert-circle{% else %}info{% endif %}" style="width:18px; height:18px;"></i>
+                            <span style="font-size: 0.88rem; font-weight: 500;">{{ message }}</span>
+                        </div>
+                        <button onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer; color:var(--text-muted);">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Viewport Body -->
+            <main class="main-viewport">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

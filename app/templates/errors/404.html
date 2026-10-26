@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}404 Page Not Found — CampusPrep{% endblock %}
+{% block content %}
+<div class="empty-state-page">
+    <div class="empty-icon-box">
+        <i data-lucide="compass"></i>
+    </div>
+    <h2>404 — Page Not Found</h2>
+    <p>The placement preparation resource or route you're looking for doesn't exist.</p>
+    <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">
+        <i data-lucide="arrow-left"></i> Return to Dashboard
+    </a>
+</div>
+{% endblock %}

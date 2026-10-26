@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Coding Lab — CampusPrep{% endblock %}
+{% block breadcrumb %}Coding Lab{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Coding Lab</h1>
+        <p class="page-subtitle">Solve foundational and placement-focused Data Structures &amp; Algorithms challenges.</p>
+    </div>
+</div>
+
+<!-- Filter Toolbar -->
+<form method="GET" action="{{ url_for('coding.index') }}" class="filter-toolbar">
+    <div class="filter-group">
+        <div class="search-input-wrap">
+            <i data-lucide="search"></i>
+            <input type="text" name="search" class="form-control search-input" placeholder="Search problems..." value="{{ search_query }}">
+        </div>
+
+        <select name="topic" class="form-select" style="min-width: 170px;" onchange="this.form.submit()">
+            <option value="all">All Topics</option>
+            {% for t in topics %}
+            <option value="{{ t }}" {% if selected_topic == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="difficulty" class="form-select" style="min-width: 140px;" onchange="this.form.submit()">
+            <option value="all">All Difficulties</option>
+            <option value="Easy" {% if selected_difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+            <option value="Medium" {% if selected_difficulty == 'Medium' %}selected{% endif %}>Medium</option>
+            <option value="Hard" {% if selected_difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+        </select>
+    </div>
+
+    <div style="font-size: 0.85rem; color: var(--text-secondary);">
+        <strong>{{ challenges|length }}</strong> Challenges available
+    </div>
+</form>
+
+<!-- Challenges List Table -->
+<div class="card">
+    <div class="card-body" style="padding: 0;">
+        {% if challenges %}
+        <div style="display: flex; flex-direction: column;">
+            {% for c in challenges %}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--border-light); gap: 16px;">
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                        <span class="badge {% if c.difficulty == 'Easy' %}badge-diff-easy{% elif c.difficulty == 'Medium' %}badge-diff-medium{% else %}badge-diff-hard{% endif %}">{{ c.difficulty }}</span>
+                        <span class="badge badge-gray">{{ c.topic }}</span>
+                        {% if c.id in solved_set %}
+                        <span class="badge badge-green"><i data-lucide="check-circle-2"></i> Accepted</span>
+                        {% elif c.id in attempted_set %}
+                        <span class="badge badge-orange"><i data-lucide="clock"></i> Attempted</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('coding.solve', slug=c.slug) }}" style="font-size: 1.05rem; font-weight: 700; color: var(--text-navy);">
+                        {{ loop.index }}. {{ c.title }}
+                    </a>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    <button class="btn-icon btn-bookmark {% if c.id in bookmarks %}bookmarked{% endif %}" data-type="coding" data-id="{{ c.id }}" title="Bookmark Challenge">
+                        <i data-lucide="{% if c.id in bookmarks %}bookmark-check{% else %}bookmark{% endif %}"></i>
+                    </button>
+                    <a href="{{ url_for('coding.solve', slug=c.slug) }}" class="btn btn-secondary btn-sm">
+                        <span>Solve Challenge</span>
+                        <i data-lucide="code"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-page">
+            <div class="empty-icon-box">
+                <i data-lucide="code-2"></i>
+            </div>
+            <h2>No Challenges Found</h2>
+            <p>No coding challenges match your search filters.</p>
+            <a href="{{ url_for('coding.index') }}" class="btn btn-secondary">Reset Filters</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Placement Resource Library - CampusPrep{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: var(--space-6);">
+  <div class="page-title-group">
+    <div class="breadcrumb">
+      <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>Resources</span>
+    </div>
+    <h1 class="page-title">Placement Resource Library</h1>
+    <p class="page-subtitle">Curated, trustworthy roadmaps, reference guides, cheatsheets, and documentation for technical and HR placement rounds.</p>
+  </div>
+</div>
+
+<!-- Search and Category Filters -->
+<div class="card" style="padding: var(--space-5); margin-bottom: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-xl);">
+  <form method="GET" action="{{ url_for('resources.index') }}" style="display: flex; flex-direction: column; gap: var(--space-4);">
+    <div style="display: flex; gap: var(--space-3); align-items: center;">
+      <div style="position: relative; flex: 1;">
+        <i data-lucide="search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--color-text-muted);"></i>
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search resources, topics, guides, roadmaps..." class="form-input" style="padding-left: 42px; width: 100%;">
+      </div>
+      <button type="submit" class="btn btn-primary" style="gap: var(--space-2);">
+        <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+        <span>Search</span>
+      </button>
+      {% if search_query or (selected_category and selected_category != 'all') %}
+      <a href="{{ url_for('resources.index') }}" class="btn btn-outline">Clear</a>
+      {% endif %}
+    </div>
+
+    <!-- Category Pills -->
+    <div class="pill-group" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <a href="{{ url_for('resources.index', q=search_query) }}" class="pill-btn {% if not selected_category or selected_category == 'all' %}active{% endif %}">
+        All Categories
+      </a>
+      {% for cat in categories %}
+      <a href="{{ url_for('resources.index', category=cat, q=search_query) }}" class="pill-btn {% if selected_category == cat %}active{% endif %}">
+        {{ cat }}
+      </a>
+      {% endfor %}
+    </div>
+  </form>
+</div>
+
+<!-- Resource Cards Grid -->
+{% if resources %}
+<div class="resource-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: var(--space-6);">
+  {% for r in resources %}
+  <div class="card resource-card" style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--color-border); border-radius: var(--radius-xl); transition: transform var(--transition-normal), box-shadow var(--transition-normal); overflow: hidden;">
+    <div class="card-body" style="padding: var(--space-6);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3);">
+        <span class="badge badge-blue">{{ r.category }}</span>
+        <button class="bookmark-btn {% if r.id in bookmarked_ids %}active{% endif %}" data-type="resource" data-id="{{ r.id }}" title="Bookmark this resource" style="background: none; border: none; cursor: pointer; color: {% if r.id in bookmarked_ids %}var(--color-primary){% else %}var(--color-text-muted){% endif %}; padding: 4px;">
+          <i data-lucide="bookmark" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+
+      <h3 style="font-size: var(--text-base); font-weight: 700; color: var(--color-text-main); margin-bottom: var(--space-2); line-height: 1.4;">
+        {{ r.title }}
+      </h3>
+
+      <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.5; margin-bottom: var(--space-4);">
+        {{ r.description }}
+      </p>
+
+      <div style="display: flex; align-items: center; gap: var(--space-4); font-size: var(--text-xs); color: var(--color-text-muted);">
+        <span style="display: flex; align-items: center; gap: 4px;">
+          <i data-lucide="tag" style="width: 14px; height: 14px;"></i>
+          {{ r.resource_type }}
+        </span>
+        <span style="display: flex; align-items: center; gap: 4px;">
+          <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+          {{ r.estimated_time }}
+        </span>
+      </div>
+    </div>
+
+    <div class="card-footer" style="padding: var(--space-4) var(--space-6); background: #FAFBFD; border-top: 1px solid var(--color-border);">
+      <a href="{{ r.external_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width: 100%; justify-content: center; gap: var(--space-2);">
+        <span>Open Official Resource</span>
+        <i data-lucide="external-link" style="width: 15px; height: 15px;"></i>
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty-state" style="padding: var(--space-12); text-align: center; border: 1px dashed var(--color-border); border-radius: var(--radius-xl);">
+  <i data-lucide="folder-search" style="width: 48px; height: 48px; color: var(--color-text-muted); margin-bottom: var(--space-4);"></i>
+  <h3 style="font-size: var(--text-lg); font-weight: 700; color: var(--color-text-main); margin-bottom: var(--space-2);">No resources found</h3>
+  <p style="font-size: var(--text-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">Try adjusting your search terms or selecting another category.</p>
+  <a href="{{ url_for('resources.index') }}" class="btn btn-outline">View All Resources</a>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide) lucide.createIcons();
+});
+</script>
+{% endblock %}

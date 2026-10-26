@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}403 Forbidden — CampusPrep{% endblock %}
+{% block content %}
+<div class="empty-state-page">
+    <div class="empty-icon-box" style="color: var(--warning-orange);">
+        <i data-lucide="shield-alert"></i>
+    </div>
+    <h2>403 — Access Restricted</h2>
+    <p>You do not have permission to view or modify this resource.</p>
+    <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">
+        <i data-lucide="arrow-left"></i> Return to Safety
+    </a>
+</div>
+{% endblock %}

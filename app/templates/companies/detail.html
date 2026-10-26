@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}{{ company.name }} Placement Preparation Guide - CampusPrep{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: var(--space-6);">
+  <div class="page-title-group">
+    <div class="breadcrumb">
+      <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+      <span class="breadcrumb-separator">/</span>
+      <a href="{{ url_for('companies.index') }}">Companies</a>
+      <span class="breadcrumb-separator">/</span>
+      <span>{{ company.name }}</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-2);">
+      <h1 class="page-title" style="margin-bottom: 0;">{{ company.name }} Preparation Guide</h1>
+      <span class="badge {% if company.tier == 'Tech Giant' %}badge-purple{% elif company.tier == 'Product-Based' %}badge-blue{% else %}badge-gray{% endif %}">
+        {{ company.tier }}
+      </span>
+    </div>
+    <p class="page-subtitle" style="margin-top: var(--space-2);">{{ company.overview }}</p>
+  </div>
+</div>
+
+<!-- Layout: 2 Columns (Main Content + Sidebar) -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-8); align-items: start;">
+  
+  <!-- Left Column: Stages, Focus Areas, Checklist -->
+  <div>
+    <!-- Section 1: Selection Pipeline Stages -->
+    <div class="card" style="margin-bottom: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-xl); overflow: hidden;">
+      <div class="card-header" style="padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--color-border); background: #FAFBFD;">
+        <h2 style="font-size: var(--text-base); font-weight: 700; color: var(--color-text-main); margin: 0; display: flex; align-items: center; gap: var(--space-2);">
+          <i data-lucide="git-commit" style="width: 18px; height: 18px; color: var(--color-primary);"></i>
+          Standard Recruitment Pipeline
+        </h2>
+      </div>
+      <div class="card-body" style="padding: var(--space-6);">
+        <div class="pipeline-steps" style="display: flex; flex-direction: column; gap: var(--space-5); position: relative;">
+          {% for stage in company.recruitment_stages %}
+          <div style="display: flex; gap: var(--space-4); align-items: flex-start;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #EFF6FF; border: 2px solid var(--color-primary); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: var(--text-sm); flex-shrink: 0;">
+              {{ loop.index }}
+            </div>
+            <div style="flex: 1;">
+              <h4 style="font-size: var(--text-base); font-weight: 700; color: var(--color-text-main); margin: 0 0 4px 0;">
+                {{ stage.name }}
+              </h4>
+              <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: 1.5; margin: 0;">
+                {{ stage.description }}
+              </p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Syllabus & Focus Topics -->
+    <div class="card" style="margin-bottom: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-xl); overflow: hidden;">
+      <div class="card-header" style="padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--color-border); background: #FAFBFD;">
+        <h2 style="font-size: var(--text-base); font-weight: 700; color: var(--color-text-main); margin: 0; display: flex; align-items: center; gap: var(--space-2);">
+          <i data-lucide="target" style="width: 18px; height: 18px; color: var(--color-primary);"></i>
+          Core Focus Areas for {{ company.name }}
+        </h2>
+      </div>
+      <div class="card-body" style="padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-5);">
+        
+        <!-- Aptitude -->
+        <div>
+          <h4 style="font-size: var(--text-sm); font-weight: 700; color: var(--color-text-main); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-2);">
+            1. Aptitude Focus Topics
+          </h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% for topic in company.aptitude_topics %}
+            <span class="badge badge-blue">{{ topic }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Coding -->
+        <div>
+          <h4 style="font-size: var(--text-sm); font-weight: 700; color: var(--color-text-main); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-2);">
+            2. Coding & DSA Patterns
+          </h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% for topic in company.coding_topics %}
+            <span class="badge badge-purple">{{ topic }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Technical Interview -->
+        <div>
+          <h4 style="font-size: var(--text-sm); font-weight: 700; color: var(--color-text-main); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-2);">
+            3. Technical Round Concepts
+          </h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% for topic in company.technical_topics %}
+            <span class="badge badge-gray">{{ topic }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- HR & Behavioral -->
+        <div>
+          <h4 style="font-size: var(--text-sm); font-weight: 700; color: var(--color-text-main); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-2);">
+            4. HR & Cultural Fit
+          </h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% for topic in company.hr_topics %}
+            <span class="badge badge-warning">{{ topic }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Interactive Placement Checklist -->
+    <div class="card" style="border: 1px solid var(--color-border); border-radius: var(--radius-xl); overflow: hidden;">
+      <div class="card-header" style="padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--color-border); background: #FAFBFD; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="font-size: var(--text-base); font-weight: 700; color: var(--color-text-main); margin: 0; display: flex; align-items: center; gap: var(--space-2);">
+            <i data-lucide="check-square" style="width: 18px; height: 18px; color: var(--color-primary);"></i>
+            Preparation Checklist
+          </h2>
+          <span style="font-size: var(--text-xs); color: var(--color-text-muted);">Check off items as you complete your preparation. Changes auto-save.</span>
+        </div>
+        <div id="checklist-counter" style="font-weight: 700; font-size: var(--text-sm); color: var(--color-primary);">
+          {{ completed_indices|length }}/{{ company.checklist_items|length }} Done
+        </div>
+      </div>
+      <div class="card-body" style="padding: var(--space-4) var(--space-6);">
+        <div class="checklist-items-container" style="display: flex; flex-direction: column; gap: var(--space-3);">
+          {% for item in company.checklist_items %}
+          {% set idx = loop.index0 %}
+          {% set checked = idx in completed_indices %}
+          <label class="checklist-item-row" style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid {% if checked %}#BFDBFE{% else %}var(--color-border){% endif %}; background: {% if checked %}#F0FDF4{% else %}#FFFFFF{% endif %}; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease;">
+            <input type="checkbox" class="checklist-checkbox" data-index="{{ idx }}" {% if checked %}checked{% endif %} style="width: 18px; height: 18px; accent-color: var(--color-primary); cursor: pointer;">
+            <span class="checklist-text" style="font-size: var(--text-sm); color: var(--color-text-main); {% if checked %}text-decoration: line-through; color: var(--color-text-muted);{% endif %} flex: 1;">
+              {{ item }}
+            </span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right Column: Quick Action Tools & Recommendations -->
+  <div>
+    <!-- Quick Practice Jump -->
+    <div class="card" style="margin-bottom: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-6);">
+      <h3 style="font-size: var(--text-base); font-weight: 700; color: var(--color-text-main); margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);">
+        <i data-lucide="zap" style="width: 18px; height: 18px; color: var(--color-warning);"></i>
+        Start Practicing
+      </h3>
+      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+        <a href="{{ url_for('aptitude.index') }}" class="btn btn-outline" style="justify-content: flex-start; gap: var(--space-2); text-align: left;">
+          <i data-lucide="calculator" style="width: 16px; height: 16px; color: var(--color-primary);"></i>
+          <span>Practice Quantitative Aptitude</span>
+        </a>
+        <a href="{{ url_for('coding.index') }}" class="btn btn-outline" style="justify-content: flex-start; gap: var(--space-2); text-align: left;">
+          <i data-lucide="code" style="width: 16px; height: 16px; color: var(--color-purple);"></i>
+          <span>Solve Coding Challenges</span>
+        </a>
+        <a href="{{ url_for('interviews.index') }}" class="btn btn-outline" style="justify-content: flex-start; gap: var(--space-2); text-align: left;">
+          <i data-lucide="message-square" style="width: 16px; height: 16px; color: var(--color-success);"></i>
+          <span>Review Interview Questions</span>
+        </a>
+        <a href="{{ url_for('mock_tests.index') }}" class="btn btn-primary" style="justify-content: center; gap: var(--space-2); margin-top: var(--space-2);">
+          <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+          <span>Take Full Mock Test</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Indicative Notice Card -->
+    <div class="card" style="border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); background: #FAFBFD;">
+      <h4 style="font-size: var(--text-xs); font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-2);">
+        Official Status
+      </h4>
+      <p style="font-size: var(--text-xs); color: var(--color-text-muted); line-height: 1.5; margin: 0;">
+        CampusPrep is an educational preparation resource and is not affiliated with or endorsed by {{ company.name }}. All trademarks belong to their respective holders.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide) lucide.createIcons();
+
+  const companyId = {{ company.id }};
+  const totalItems = {{ company.checklist_items|length }};
+  const checkboxes = document.querySelectorAll('.checklist-checkbox');
+  const counterEl = document.getElementById('checklist-counter');
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', async (e) => {
+      const idx = e.target.dataset.index;
+      const row = e.target.closest('.checklist-item-row');
+      const textSpan = row.querySelector('.checklist-text');
+
+      try {
+        const res = await CampusPrep.postJSON(`/companies/api/${companyId}/checklist`, { item_index: parseInt(idx) });
+        if (res.success) {
+          if (res.is_completed) {
+            row.style.background = '#F0FDF4';
+            row.style.borderColor = '#BFDBFE';
+            textSpan.style.textDecoration = 'line-through';
+            textSpan.style.color = 'var(--color-text-muted)';
+            CampusPrep.toast('Task checked off!', 'success');
+          } else {
+            row.style.background = '#FFFFFF';
+            row.style.borderColor = 'var(--color-border)';
+            textSpan.style.textDecoration = 'none';
+            textSpan.style.color = 'var(--color-text-main)';
+          }
+
+          // Update counter
+          const checkedCount = document.querySelectorAll('.checklist-checkbox:checked').length;
+          counterEl.textContent = `${checkedCount}/${totalItems} Done`;
+        }
+      } catch (err) {
+        console.error(err);
+        CampusPrep.toast('Failed to save checklist state', 'error');
+        // revert checkbox
+        e.target.checked = !e.target.checked;
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

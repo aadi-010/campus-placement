@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Mock Tests — CampusPrep{% endblock %}
+{% block breadcrumb %}Mock Tests{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Timed Mock Tests</h1>
+        <p class="page-subtitle">Simulate real campus placement online assessments with server-enforced time limits.</p>
+    </div>
+</div>
+
+<!-- Available Mock Tests Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 36px;">
+    {% for test in tests %}
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <span class="badge badge-blue">{{ test.category }}</span>
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+                    <i data-lucide="clock" style="width: 14px; height: 14px; vertical-align: middle;"></i> {{ test.duration_minutes }} mins
+                </span>
+            </div>
+            <h3 style="font-size: 1.15rem; margin-bottom: 8px;">{{ test.title }}</h3>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                {{ test.description }}
+            </p>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+                <strong>{{ test.total_questions }}</strong> Multiple Choice Questions
+            </div>
+        </div>
+        <div style="padding: 16px 20px; border-top: 1px solid var(--border-light); background: #FAFCFE;">
+            <form method="POST" action="{{ url_for('mock_tests.start_test', test_id=test.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i data-lucide="play"></i> Start Timed Test
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Past Test Attempts History -->
+<div class="card">
+    <div class="card-header">
+        <h3 style="font-size: 1.1rem;">Your Past Mock Test Attempts</h3>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if attempts %}
+        <div style="display: flex; flex-direction: column;">
+            {% for a in attempts %}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border-light);">
+                <div>
+                    <div style="font-weight: 700; font-size: 0.96rem;">{{ a.mock_test.title }}</div>
+                    <div style="font-size: 0.78rem; color: var(--text-secondary);">
+                        Date: {{ a.started_at.strftime('%b %d, %Y - %H:%M') }} &middot; Status: {{ a.status|capitalize }}
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="text-align: right;">
+                        <div style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: {% if a.score >= 70 %}var(--success-green){% elif a.score >= 40 %}var(--warning-orange){% else %}var(--danger-red){% endif %};">
+                            {{ a.score }}%
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted);">
+                            {{ a.correct_count }}/{{ a.total_questions }} Correct
+                        </div>
+                    </div>
+                    {% if a.status == 'in_progress' and not a.is_expired %}
+                    <a href="{{ url_for('mock_tests.take_test', attempt_id=a.id) }}" class="btn btn-warning btn-sm">Resume</a>
+                    {% else %}
+                    <a href="{{ url_for('mock_tests.view_result', attempt_id=a.id) }}" class="btn btn-secondary btn-sm">Scorecard</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="padding: 30px; text-align: center; color: var(--text-secondary);">
+            <p>You haven't attempted any mock tests yet. Choose an assessment above to benchmark your placement readiness!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}{{ test.title }} — Live Mock Assessment{% endblock %}
+{% block breadcrumb %}
+<a href="{{ url_for('mock_tests.index') }}">Mock Tests</a> / {{ test.title }}
+{% endblock %}
+
+{% block content %}
+<div class="mock-test-layout" id="mockTestWorkspace" data-attempt-id="{{ attempt.id }}" data-remaining="{{ remaining_seconds }}">
+    <!-- Left Question Panel -->
+    <div class="card" style="padding: 28px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge badge-blue">{{ test.category }}</span>
+                <span class="badge badge-gray" id="currentTopicBadge">Topic</span>
+                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);" id="currentQuestionNumText">Question 1 of {{ questions|length }}</span>
+            </div>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--purple-accent);">
+                <input type="checkbox" id="markReviewCheckbox"> Mark for Review
+            </label>
+        </div>
+
+        <div id="mockQuestionStatement" style="font-size: 1.15rem; font-weight: 600; color: var(--text-navy); line-height: 1.6; margin-bottom: 24px;">
+            Loading question...
+        </div>
+
+        <!-- Multiple Choice Options -->
+        <div class="options-list" id="mockOptionsList">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--border-light);">
+            <button class="btn btn-secondary" id="btnPrevMockQ">
+                <i data-lucide="chevron-left"></i> Previous
+            </button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" id="btnClearSelection">Clear Choice</button>
+                <button class="btn btn-primary" id="btnNextMockQ">
+                    <span>Next</span>
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar Palette & Timer -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Timer Card -->
+        <div class="card" style="padding: 18px; text-align: center;">
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">Time Remaining</div>
+            <div class="timer-pill" id="countdownTimerDisplay" style="justify-content: center; margin: 0 auto 8px auto;">
+                <i data-lucide="clock"></i>
+                <span id="countdownTimerDigits">00:00</span>
+            </div>
+            <div style="font-size: 0.74rem; color: var(--text-secondary);">
+                Server-enforced deadline: test auto-submits on expiry.
+            </div>
+        </div>
+
+        <!-- Question Palette Card -->
+        <div class="card" style="padding: 18px;">
+            <h4 style="font-size: 0.92rem; margin-bottom: 10px;">Question Palette</h4>
+            
+            <div style="display: flex; gap: 10px; font-size: 0.74rem; color: var(--text-secondary); margin-bottom: 12px; flex-wrap: wrap;">
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: var(--success-green); border-radius: 2px;"></span> Answered</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: var(--purple-accent); border-radius: 2px;"></span> Marked</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: #E2E8F0; border-radius: 2px;"></span> Not Answered</span>
+            </div>
+
+            <div class="question-palette-grid" id="questionPaletteGrid">
+                {% for q in questions %}
+                <button class="palette-btn {% if loop.first %}current{% endif %} {% if q.selected_option is not none %}answered{% endif %} {% if q.is_marked %}marked{% endif %}"
+                        data-index="{{ loop.index0 }}"
+                        id="paletteBtn_{{ loop.index0 }}">
+                    {{ loop.index }}
+                </button>
+                {% endfor %}
+            </div>
+
+            <!-- Submit Test Form -->
+            <form method="POST" action="{{ url_for('mock_tests.submit_test', attempt_id=attempt.id) }}" style="margin-top: 24px;" id="submitTestForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-success" style="width: 100%;" onclick="return confirm('Are you sure you want to finalize and submit this test?');">
+                    <i data-lucide="check-square"></i> Submit Test
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Embedded Question Data for client navigation -->
+<script id="mockQuestionsData" type="application/json">
+{{ questions|tojson }}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/mock_test.js') }}"></script>
+{% endblock %}

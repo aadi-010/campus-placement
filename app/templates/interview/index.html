@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Interview Room — CampusPrep{% endblock %}
+{% block breadcrumb %}Interview Room{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Interview Room</h1>
+        <p class="page-subtitle">Core technical concepts (OOP, DBMS, OS, Networks) and high-impact HR/behavioral question frameworks.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('interviews.practice') }}" class="btn btn-primary">
+            <i data-lucide="mic"></i> Interactive Practice Mode
+        </a>
+    </div>
+</div>
+
+<!-- Category Tabs -->
+<div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <a href="{{ url_for('interviews.index', category='all', subtopic=selected_subtopic) }}"
+       class="btn {% if selected_category == 'all' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+        All Questions ({{ total_count }})
+    </a>
+    <a href="{{ url_for('interviews.index', category='Technical', subtopic=selected_subtopic) }}"
+       class="btn {% if selected_category == 'Technical' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+        Technical (CS &amp; DSA)
+    </a>
+    <a href="{{ url_for('interviews.index', category='HR & Behavioral', subtopic=selected_subtopic) }}"
+       class="btn {% if selected_category == 'HR & Behavioral' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+        HR &amp; Behavioral
+    </a>
+</div>
+
+<!-- Search & Subtopic Filters Toolbar -->
+<form method="GET" action="{{ url_for('interviews.index') }}" class="filter-toolbar">
+    <input type="hidden" name="category" value="{{ selected_category }}">
+
+    <div class="filter-group">
+        <div class="search-input-wrap">
+            <i data-lucide="search"></i>
+            <input type="text" name="search" class="form-control search-input" placeholder="Search questions..." value="{{ search_query }}">
+        </div>
+
+        <select name="subtopic" class="form-select" style="min-width: 170px;" onchange="this.form.submit()">
+            <option value="all">All Subtopics</option>
+            {% for s in subtopics %}
+            <option value="{{ s }}" {% if selected_subtopic == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div style="font-size: 0.85rem; color: var(--text-secondary);">
+        <strong>{{ questions|length }}</strong> Questions
+    </div>
+</form>
+
+<!-- Interview Cards List -->
+<div style="display: flex; flex-direction: column; gap: 16px;">
+    {% for q in questions %}
+    {% set prog = progress_records.get(q.id) %}
+    <div class="interview-card" id="qCard_{{ q.id }}">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 12px;">
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span class="badge badge-purple">{{ q.subtopic }}</span>
+                    <span class="badge badge-gray">{{ q.category }}</span>
+                    {% if prog and prog.is_reviewed %}
+                    <span class="badge badge-green"><i data-lucide="check"></i> Reviewed</span>
+                    {% endif %}
+                </div>
+                <h3 style="font-size: 1.1rem; line-height: 1.4; color: var(--text-navy);">{{ loop.index }}. {{ q.question }}</h3>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                <button class="btn-icon btn-bookmark {% if q.id in bookmarks %}bookmarked{% endif %}" data-type="interview" data-id="{{ q.id }}" title="Bookmark Question">
+                    <i data-lucide="{% if q.id in bookmarks %}bookmark-check{% else %}bookmark{% endif %}"></i>
+                </button>
+                <button class="btn btn-secondary btn-sm btn-reveal-answer" data-target="answer_{{ q.id }}">
+                    <span>Reveal Model Answer</span>
+                    <i data-lucide="chevron-down"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Hidden Model Answer Box (Revealed on click) -->
+        <div id="answer_{{ q.id }}" class="interview-answer-box" style="display: none;">
+            <div style="font-weight: 700; font-size: 0.88rem; color: var(--brand-blue); margin-bottom: 6px;">
+                💡 Model Answer:
+            </div>
+            <div style="font-size: 0.92rem; line-height: 1.6; color: var(--text-navy); margin-bottom: 14px;">
+                {{ q.answer|replace('\n', '<br>')|safe }}
+            </div>
+
+            {% if q.key_points %}
+            <div style="margin-bottom: 12px;">
+                <strong style="font-size: 0.82rem; color: var(--text-secondary);">Key Points to Mention:</strong>
+                <ul style="padding-left: 20px; font-size: 0.86rem; color: var(--text-navy); margin-top: 4px; line-height: 1.5;">
+                    {% for pt in q.key_points %}
+                    <li>{{ pt }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if q.common_mistakes %}
+            <div style="padding: 8px 12px; background: var(--danger-light); border-radius: 6px; font-size: 0.8rem; color: #9B283D; margin-bottom: 12px;">
+                <strong>⚠️ Common Mistake:</strong> {{ q.common_mistakes }}
+            </div>
+            {% endif %}
+
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-light); padding-top: 10px; margin-top: 10px;">
+                <a href="{{ url_for('interviews.practice', id=q.id) }}" class="btn btn-outline-primary btn-sm">
+                    <i data-lucide="edit-3"></i> Practice Typing Response
+                </a>
+                <button class="btn btn-success btn-sm btn-mark-reviewed" data-id="{{ q.id }}">
+                    <i data-lucide="check-circle-2"></i>
+                    <span>{% if prog and prog.is_reviewed %}Marked Reviewed{% else %}Mark as Reviewed{% endif %}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/interview.js') }}"></script>
+{% endblock %}

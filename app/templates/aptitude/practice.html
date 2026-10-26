@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Practice Mode — Aptitude Arena — CampusPrep{% endblock %}
+{% block breadcrumb %}
+<a href="{{ url_for('aptitude.index') }}">Aptitude Arena</a> / Practice Session
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Aptitude Practice Session</h1>
+        <p class="page-subtitle">Answer questions, verify explanations, and reinforce mathematical shortcuts.</p>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 0.88rem; font-weight: 600; color: var(--text-secondary);" id="sessionScoreText">
+            Session Score: <span style="color: var(--brand-blue);" id="sessionScoreVal">0 / 0</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="restartSessionBtn">
+            <i data-lucide="rotate-ccw"></i> Restart
+        </button>
+        <a href="{{ url_for('aptitude.index') }}" class="btn btn-secondary btn-sm">
+            <i data-lucide="list"></i> Exit to Catalog
+        </a>
+    </div>
+</div>
+
+<!-- Progress Bar -->
+<div class="progress-track" style="margin-bottom: 24px; height: 6px;">
+    <div class="progress-fill" id="sessionProgressBar" style="width: 0%; background: var(--brand-blue);"></div>
+</div>
+
+<!-- Active Question Workspace -->
+<div id="practiceArea" data-init-id="{{ initial_id }}" data-init-cat="{{ initial_category }}" data-init-topic="{{ initial_topic }}">
+    <div class="card" id="questionCard" style="padding: 32px; margin-bottom: 24px;">
+        <!-- Question Meta & Bookmark -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="badge" id="qDifficultyBadge">Medium</span>
+                <span class="badge badge-gray" id="qTopicBadge">Topic</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="qIndexText">Question 1 of 1</span>
+            </div>
+            <button class="btn-icon" id="qBookmarkBtn" title="Bookmark Question">
+                <i data-lucide="bookmark"></i>
+            </button>
+        </div>
+
+        <!-- Question Statement -->
+        <div id="qStatement" style="font-size: 1.15rem; font-weight: 600; color: var(--text-navy); line-height: 1.6; margin-bottom: 24px;">
+            Loading question...
+        </div>
+
+        <!-- Options List -->
+        <div class="options-list" id="qOptionsList">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border-light);">
+            <button class="btn btn-secondary" id="prevQBtn" disabled>
+                <i data-lucide="chevron-left"></i> Previous
+            </button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-primary" id="submitAnswerBtn" disabled>
+                    <span>Check Answer</span>
+                </button>
+                <button class="btn btn-secondary" id="nextQBtn" style="display: none;">
+                    <span>Next Question</span>
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Explanation Drawer (Hidden until answer submitted) -->
+        <div id="explanationDrawer" class="explanation-card" style="display: none;">
+            <div class="explanation-title" id="explanationResultHeader">
+                <i data-lucide="check-circle"></i> Explanation
+            </div>
+            <div id="explanationText" style="font-size: 0.92rem; color: var(--text-navy); line-height: 1.6; margin-bottom: 8px;"></div>
+            <div id="shortcutBox" style="margin-top: 8px; padding: 8px 12px; background: #EEF3FD; border-radius: 6px; font-size: 0.84rem; color: #1E469A; display: none;">
+                <strong>⚡ Shortcut / Tip:</strong> <span id="shortcutText"></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/aptitude.js') }}"></script>
+{% endblock %}
