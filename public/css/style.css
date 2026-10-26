@@ -28,6 +28,42 @@
   --danger-red: #DC4C64;
   --danger-light: #FDEEF1;
 
+  /* Semantic Color Aliases for Component Consistency */
+  --color-primary: #3567D6;
+  --color-primary-hover: #2B54B3;
+  --color-primary-light: #EEF3FD;
+  --color-text-main: #182230;
+  --color-text-muted: #788394;
+  --color-text-subtle: #9BA6B5;
+  --color-border: #E9EDF3;
+  --color-border-subtle: #F2F5F9;
+  --color-success: #21966B;
+  --color-warning: #C87A25;
+  --color-danger: #DC4C64;
+  --color-purple: #8155CB;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Typography Scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
   /* Typography */
   --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -202,6 +238,54 @@ a:hover {
 .badge-diff-easy { background: var(--success-light); color: var(--success-green); }
 .badge-diff-medium { background: var(--warning-light); color: var(--warning-orange); }
 .badge-diff-hard { background: var(--danger-light); color: var(--danger-red); }
+
+/* Pill Filter Buttons */
+.pill-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  background: var(--surface-main);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+.pill-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-navy);
+  border-color: #D6DFEB;
+}
+.pill-btn.active {
+  background: var(--brand-blue);
+  color: #ffffff !important;
+  border-color: var(--brand-blue);
+  box-shadow: 0 1px 3px rgba(53, 103, 214, 0.3);
+}
+
+/* Global Progress Bars */
+.progress-bar-container {
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 /* Cards */
 .card {

@@ -22,15 +22,20 @@ from app.models.coding import CodingSubmission, CodingChallenge
 from app.models.interview import InterviewProgress, InterviewQuestion
 from app.models.mock_test import MockTestAttempt
 
+from app.extensions import db
+
 def calculate_readiness_score(user_id):
     # 1. Aptitude metrics
     # Unique questions attempted
     unique_aptitude_attempts = AptitudeAttempt.query.filter_by(user_id=user_id)\
-        .with_entities(AptitudeAttempt.question_id, func.max(AptitudeAttempt.is_correct))\
+        .with_entities(
+            AptitudeAttempt.question_id,
+            func.max(db.case((AptitudeAttempt.is_correct == True, 1), else_=0))
+        )\
         .group_by(AptitudeAttempt.question_id).all()
 
     total_attempted_aptitude = len(unique_aptitude_attempts)
-    correct_unique_aptitude = sum(1 for _, is_corr in unique_aptitude_attempts if is_corr)
+    correct_unique_aptitude = sum(1 for _, is_corr in unique_aptitude_attempts if is_corr == 1)
     
     aptitude_accuracy = (correct_unique_aptitude / total_attempted_aptitude) if total_attempted_aptitude > 0 else 0
     # Benchmark target: 50 unique questions

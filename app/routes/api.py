@@ -108,3 +108,45 @@ def api_profile():
         'message': 'Profile updated successfully',
         'user': current_user.to_dict()
     })
+
+@api_bp.route('/supabase/config', methods=['GET'])
+def supabase_public_config():
+    """Return public Supabase configuration for client-side JavaScript SDK"""
+    from app.services.supabase_service import supabase_service
+    return jsonify({
+        'success': True,
+        'config': supabase_service.get_public_config()
+    })
+
+@api_bp.route('/supabase/status', methods=['GET'])
+def supabase_status():
+    """Check connectivity to Supabase Cloud Auth, JWKS, and live PostgreSQL database"""
+    from app.services.supabase_service import supabase_service
+    from sqlalchemy import text
+
+    health = supabase_service.check_health()
+    
+    # Check PostgreSQL database status via SQLAlchemy
+    db_status = 'disconnected'
+    db_info = {}
+    try:
+        res = db.session.execute(text("SELECT current_database(), current_user, version()")).fetchone()
+        if res:
+            db_status = 'connected'
+            db_info = {
+                'database': res[0],
+                'user': res[1],
+                'dialect': db.engine.dialect.name
+            }
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+
+    return jsonify({
+        'success': True,
+        'supabase': health,
+        'database': {
+            'status': db_status,
+            'info': db_info
+        }
+    })
+

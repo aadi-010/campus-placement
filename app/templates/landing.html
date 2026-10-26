@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CampusPrep — Prepare Smarter. Practice Better. Get Placed.</title>
-    <meta name="description" content="Unified campus placement preparation platform for college students. Master aptitude, practice coding, ace technical & HR interviews.">
+    <meta name="description" content="Unified campus placement preparation platform for college students. Master aptitude, practice coding, ace technical & HR interviews with verified real-time tracking.">
+    
     <!-- Google Fonts Preconnect and Link -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Design System Stylesheets -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%233567D6%22/><text y=%2268%22 x=%2250%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2258%22 font-weight=%22bold%22 fill=%22white%22>CP</text></svg>">
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
             --bg-primary: #F7F9FC;
@@ -30,6 +34,10 @@
             --success-light: #EAF7F1;
             --warning-orange: #C87A25;
             --warning-light: #FDF4EB;
+            --purple-accent: #8155CB;
+            --purple-light: #F4EFFC;
+            --danger-red: #DC4C64;
+            --danger-light: #FDEEF1;
             --radius-sm: 6px;
             --radius-md: 8px;
             --radius-lg: 12px;
@@ -37,16 +45,18 @@
             --radius-full: 9999px;
             --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             --font-heading: 'Manrope', 'DM Sans', -apple-system, sans-serif;
-            --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
-            --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
-            --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.08), 0 2px 4px -2px rgba(16, 24, 40, 0.04);
+            --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
+            --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+            --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.06);
             --shadow-lg: 0 12px 24px -4px rgba(16, 24, 40, 0.08);
         }
+
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
             font-family: var(--font-body);
             background-color: var(--bg-primary);
@@ -54,20 +64,57 @@
             margin: 0;
             padding: 0;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
+
         h1, h2, h3, h4, h5, h6 {
             font-family: var(--font-heading);
             color: var(--text-navy);
             font-weight: 700;
         }
+
         a {
             color: var(--brand-blue);
             text-decoration: none;
+            transition: color 0.15s ease;
         }
+        a:hover {
+            color: var(--brand-blue-hover);
+        }
+
+        /* Top Navigation Header */
+        .landing-nav {
+            height: 72px;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .landing-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .landing-nav-link {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: color 0.15s ease;
+        }
+        .landing-nav-link:hover {
+            color: var(--text-navy);
+        }
+
         .brand-icon-box {
-            width: 34px;
-            height: 34px;
-            background: var(--brand-blue);
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3567D6 0%, #2B54B3 100%);
             color: #ffffff;
             border-radius: var(--radius-sm);
             display: flex;
@@ -75,23 +122,26 @@
             justify-content: center;
             font-weight: 800;
             font-family: var(--font-heading);
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 2px 4px rgba(53, 103, 214, 0.25);
         }
+
         .brand-text {
             font-family: var(--font-heading);
             font-weight: 800;
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             letter-spacing: -0.02em;
             color: var(--text-navy);
         }
+
+        /* Button Component Hierarchy */
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 9px 16px;
+            padding: 10px 18px;
             font-family: var(--font-body);
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             font-weight: 600;
             border-radius: var(--radius-sm);
             border: 1px solid transparent;
@@ -105,11 +155,12 @@
             background-color: var(--brand-blue);
             color: #ffffff !important;
             border-color: var(--brand-blue);
+            box-shadow: 0 1px 3px rgba(53, 103, 214, 0.3);
         }
         .btn-primary:hover {
             background-color: var(--brand-blue-hover);
-            color: #ffffff !important;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 4px 12px rgba(53, 103, 214, 0.35);
+            transform: translateY(-1px);
         }
         .btn-secondary {
             background-color: var(--surface-main);
@@ -126,81 +177,207 @@
             border-color: var(--border-light);
         }
         .btn-outline:hover {
-            background-color: var(--surface-hover);
+            background-color: var(--brand-blue-light);
+            border-color: var(--brand-blue);
         }
         .btn-lg {
-            padding: 12px 24px;
+            padding: 14px 26px;
             font-size: 1rem;
             border-radius: var(--radius-md);
+            font-weight: 700;
         }
-        .card {
-            background: var(--surface-main);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-xs);
-        }
-        .landing-nav {
-            height: 72px;
-            padding: 0 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--surface-main);
-            border-bottom: 1px solid var(--border-light);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
+
+        /* Hero Section */
         .landing-hero {
-            padding: 80px 20px 60px 20px;
+            padding: 70px 20px 50px 20px;
             text-align: center;
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
         }
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 14px;
+            padding: 6px 16px;
             border-radius: var(--radius-full);
-            background: var(--brand-blue-light);
+            background: #EEF4FD;
             color: var(--brand-blue);
-            font-size: 0.84rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #D7E5FA;
+        }
+        .hero-badge .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-green);
+            box-shadow: 0 0 0 2px rgba(33, 150, 107, 0.2);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
         }
         .landing-hero h1 {
-            font-size: 3.2rem;
+            font-size: 3.4rem;
             font-weight: 800;
-            letter-spacing: -0.03em;
+            letter-spacing: -0.035em;
             line-height: 1.15;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             color: var(--text-navy);
         }
+        .landing-hero h1 span.gradient-text {
+            background: linear-gradient(135deg, #3567D6 0%, #1E469A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .landing-hero p {
-            font-size: 1.18rem;
+            font-size: 1.2rem;
             color: var(--text-secondary);
             line-height: 1.6;
-            max-width: 680px;
-            margin: 0 auto 32px auto;
+            max-width: 720px;
+            margin: 0 auto 36px auto;
         }
         .hero-cta-group {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 16px;
-            margin-bottom: 50px;
+            margin-bottom: 48px;
         }
+
+        /* Hero Product Frame */
         .hero-preview-frame {
             max-width: 1040px;
             margin: 0 auto;
             background: var(--surface-main);
             border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 20px 40px -10px rgba(16, 24, 40, 0.1);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 24px 48px -12px rgba(16, 24, 40, 0.12), 0 4px 12px rgba(16, 24, 40, 0.04);
             overflow: hidden;
             padding: 24px;
+            text-align: left;
         }
+        .frame-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+        }
+        .frame-dots {
+            display: flex;
+            gap: 8px;
+        }
+        .frame-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #EF4444; }
+        .dot-yellow { background: #F59E0B; }
+        .dot-green { background: #10B981; }
+
+        .frame-url-bar {
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            padding: 4px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Metrics Live Grid */
+        .live-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .live-stat-box {
+            padding: 18px;
+            background: #FAFCFE;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .live-stat-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+            border-color: #D3E0F3;
+        }
+        .stat-label {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-navy);
+            margin-bottom: 4px;
+        }
+        .stat-badge {
+            font-size: 0.74rem;
+            font-weight: 600;
+        }
+
+        /* Recruiter Track Trust Bar */
+        .trust-section {
+            padding: 30px 20px 60px 20px;
+            text-align: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .trust-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .trust-badges-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .trust-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: #FFFFFF;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-full);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-navy);
+            box-shadow: var(--shadow-xs);
+            transition: all 0.15s ease;
+        }
+        .trust-badge-pill:hover {
+            border-color: var(--brand-blue);
+            color: var(--brand-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Features Section */
         .feature-grid-section {
             padding: 80px 20px;
             max-width: 1160px;
@@ -208,92 +385,159 @@
         }
         .section-header-center {
             text-align: center;
-            max-width: 600px;
+            max-width: 680px;
             margin: 0 auto 50px auto;
         }
         .section-header-center h2 {
-            font-size: 2.1rem;
-            letter-spacing: -0.02em;
-            margin-bottom: 10px;
+            font-size: 2.3rem;
+            letter-spacing: -0.025em;
+            margin-bottom: 12px;
         }
         .features-cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 24px;
         }
-        .how-it-works-section {
+        .feature-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-xs);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: #D3E0F3;
+        }
+        .feature-icon-container {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* SaaS Comparison Matrix Section */
+        .comparison-section {
             background: #FFFFFF;
             border-top: 1px solid var(--border-light);
             border-bottom: 1px solid var(--border-light);
             padding: 80px 20px;
         }
-        .steps-timeline-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 24px;
-            max-width: 1100px;
+        .comparison-table-wrap {
+            max-width: 960px;
+            margin: 0 auto;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+        .comp-table th {
+            padding: 18px 24px;
+            background: #F8FAFC;
+            font-weight: 700;
+            color: var(--text-navy);
+            border-bottom: 1px solid var(--border-light);
+        }
+        .comp-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+        .comp-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* How It Works Section */
+        .how-it-works-section {
+            padding: 80px 20px;
+            max-width: 1140px;
             margin: 0 auto;
         }
+        .steps-timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 24px;
+        }
         .step-card {
-            padding: 24px;
+            padding: 26px;
             border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            background: #FFFFFF;
+            box-shadow: var(--shadow-xs);
+            transition: transform 0.15s ease;
+        }
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
         .step-number {
             font-family: var(--font-heading);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: 800;
             color: var(--brand-blue);
             margin-bottom: 12px;
         }
+
+        /* Final Call to Action */
         .final-cta-section {
-            padding: 80px 20px;
+            padding: 90px 20px;
             text-align: center;
-            background: linear-gradient(135deg, #3567D6 0%, #1E4AA8 100%);
+            background: linear-gradient(135deg, #3567D6 0%, #1A449C 100%);
             color: #ffffff;
         }
         .final-cta-section h2 {
             color: #ffffff;
-            font-size: 2.4rem;
-            margin-bottom: 12px;
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 16px;
         }
         .final-cta-section p {
-            color: #E2EBF8;
-            font-size: 1.1rem;
-            margin-bottom: 28px;
+            color: #E2ECFE;
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto 36px auto;
+            line-height: 1.6;
         }
+
+        /* Footer */
         .landing-footer {
-            padding: 30px 40px;
-            background: var(--surface-main);
+            padding: 32px 40px;
+            background: #FFFFFF;
             border-top: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             color: var(--text-secondary);
         }
-        @media (max-width: 768px) {
-            .landing-hero h1 { font-size: 2.2rem; }
+
+        @media (max-width: 860px) {
+            .landing-hero h1 { font-size: 2.4rem; }
             .landing-nav { padding: 0 20px; }
-            .hero-cta-group { flex-direction: column; }
+            .landing-nav-links { display: none; }
+            .live-stat-grid { grid-template-columns: 1fr 1fr; }
+            .hero-cta-group { flex-direction: column; width: 100%; }
+            .hero-cta-group .btn { width: 100%; }
+            .landing-footer { flex-direction: column; gap: 14px; text-align: center; }
         }
     </style>
 </head>
 <body>
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div style="max-width: 900px; margin: 16px auto 0 auto; padding: 0 20px;">
-            {% for category, message in messages %}
-            <div class="card" style="padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid var(--brand-blue); background: #FFFFFF;">
-                <span style="font-size: 0.9rem; font-weight: 500;">{{ message }}</span>
-                <button onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer;">&times;</button>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-    {% endwith %}
 
     <!-- Top Navigation Header -->
     <header class="landing-nav">
@@ -301,121 +545,293 @@
             <div class="brand-icon-box">CP</div>
             <div class="brand-text">CampusPrep</div>
         </div>
-        <div style="display: flex; align-items: center; gap: 14px;">
+
+        <nav class="landing-nav-links">
+            <a href="#features" class="landing-nav-link">Features</a>
+            <a href="{{ url_for('aptitude.index') }}" class="landing-nav-link">Aptitude</a>
+            <a href="{{ url_for('coding.index') }}" class="landing-nav-link">Coding Lab</a>
+            <a href="{{ url_for('companies.index') }}" class="landing-nav-link">Companies</a>
+            <a href="{{ url_for('mock_tests.index') }}" class="landing-nav-link">Mock Tests</a>
+        </nav>
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">
+                <i data-lucide="layout-dashboard" style="width: 16px; height: 16px;"></i>
+                <span>Open Dashboard</span>
+            </a>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Log Out</a>
+            {% else %}
             <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Log In</a>
-            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started Free</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                <span>Get Started Free</span>
+                <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+            </a>
+            {% endif %}
         </div>
     </header>
+
+    <!-- Flash Notifications -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div style="max-width: 960px; margin: 20px auto 0 auto; padding: 0 20px;">
+            {% for category, message in messages %}
+            <div style="padding: 14px 20px; border-radius: var(--radius-md); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid var(--border-light); border-left: 4px solid {% if category == 'success' %}var(--success-green){% elif category == 'danger' %}var(--danger-red){% else %}var(--brand-blue){% endif %}; box-shadow: var(--shadow-sm);">
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 0.92rem; font-weight: 600; color: var(--text-navy);">
+                    <i data-lucide="{% if category == 'success' %}check-circle-2{% elif category == 'danger' %}alert-circle{% else %}info{% endif %}" style="width: 18px; height: 18px; color: {% if category == 'success' %}var(--success-green){% elif category == 'danger' %}var(--danger-red){% else %}var(--brand-blue){% endif %};"></i>
+                    <span>{{ message }}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" style="background:none; border:none; cursor:pointer; font-size: 1.2rem; color: var(--text-muted);">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
 
     <!-- Hero Section -->
     <section class="landing-hero">
         <div class="hero-badge">
-            <i data-lucide="sparkles" style="width:16px; height:16px;"></i>
-            <span>College Placement Season 2026 Ready</span>
+            <span class="pulse-dot"></span>
+            <span>Placement Season 2026 Ready &middot; Live Verified Database</span>
         </div>
-        <h1>Your Dream Placement Starts With Better Preparation.</h1>
-        <p>Practice aptitude, master coding challenges, prepare for interviews, and track your progress—all in one place.</p>
+
+        <h1>Your Dream Placement Starts With <span class="gradient-text">Better Preparation.</span></h1>
+        <p>A unified, production-grade placement ecosystem. Practice <strong>{{ aptitude_count }}+</strong> verified aptitude questions, master <strong>{{ coding_count }}+</strong> algorithmic challenges, prepare for technical &amp; HR interviews, and track your readiness in one place.</p>
         
         <div class="hero-cta-group">
             <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
-                <span>Get Started Free</span>
-                <i data-lucide="arrow-right"></i>
+                <span>Start Free Preparation</span>
+                <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
             </a>
-            <a href="#features" class="btn btn-secondary btn-lg">Explore Features</a>
+            <a href="#features" class="btn btn-secondary btn-lg">Explore All Features</a>
         </div>
 
         <!-- Custom Product Visual Preview -->
         <div class="hero-preview-frame">
-            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; margin-bottom: 20px;">
-                <div style="display: flex; gap: 8px;">
-                    <div style="width: 10px; height: 10px; border-radius: 50%; background: #EF4444;"></div>
-                    <div style="width: 10px; height: 10px; border-radius: 50%; background: #F59E0B;"></div>
-                    <div style="width: 10px; height: 10px; border-radius: 50%; background: #10B981;"></div>
+            <div class="frame-header">
+                <div class="frame-dots">
+                    <div class="frame-dot dot-red"></div>
+                    <div class="frame-dot dot-yellow"></div>
+                    <div class="frame-dot dot-green"></div>
                 </div>
-                <div style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-muted);">https://campusprep.edu/dashboard</div>
-                <div></div>
+                <div class="frame-url-bar">
+                    <i data-lucide="lock" style="width: 12px; height: 12px; color: var(--success-green);"></i>
+                    <span>https://campusprep.edu/dashboard</span>
+                </div>
+                <div style="font-size: 0.76rem; font-weight: 600; color: var(--success-green); display: flex; align-items: center; gap: 5px;">
+                    <span style="width: 7px; height: 7px; background: var(--success-green); border-radius: 50%;"></span>
+                    Live Platform DB
+                </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: left;">
-                <div style="padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-light);">
-                    <div style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;">Aptitude Attempted</div>
-                    <div style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--text-navy); margin: 4px 0;">128</div>
-                    <div style="font-size: 0.72rem; color: var(--success-green); font-weight: 600;">84.2% accuracy</div>
+            <!-- Live Database Metrics Grid -->
+            <div class="live-stat-grid">
+                <div class="live-stat-box">
+                    <div class="stat-label">
+                        <i data-lucide="brain" style="width: 15px; height: 15px; color: var(--brand-blue);"></i>
+                        <span>Aptitude Bank</span>
+                    </div>
+                    <div class="stat-number">{{ aptitude_count }}</div>
+                    <div class="stat-badge" style="color: var(--success-green);">Quant, Logical &amp; Verbal</div>
                 </div>
-                <div style="padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-light);">
-                    <div style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;">Coding Solved</div>
-                    <div style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--text-navy); margin: 4px 0;">32</div>
-                    <div style="font-size: 0.72rem; color: var(--brand-blue); font-weight: 600;">Python &amp; DSA</div>
+
+                <div class="live-stat-box">
+                    <div class="stat-label">
+                        <i data-lucide="code-2" style="width: 15px; height: 15px; color: var(--success-green);"></i>
+                        <span>Coding Lab</span>
+                    </div>
+                    <div class="stat-number">{{ coding_count }}</div>
+                    <div class="stat-badge" style="color: var(--brand-blue);">DSA &amp; AST Sandbox</div>
                 </div>
-                <div style="padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-light);">
-                    <div style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;">Interview Prep</div>
-                    <div style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--text-navy); margin: 4px 0;">46</div>
-                    <div style="font-size: 0.72rem; color: var(--purple-accent); font-weight: 600;">Tech &amp; HR reviewed</div>
+
+                <div class="live-stat-box">
+                    <div class="stat-label">
+                        <i data-lucide="messages-square" style="width: 15px; height: 15px; color: var(--purple-accent);"></i>
+                        <span>Interview Room</span>
+                    </div>
+                    <div class="stat-number">{{ interview_count }}</div>
+                    <div class="stat-badge" style="color: var(--purple-accent);">Core CS &amp; HR Star Method</div>
                 </div>
-                <div style="padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-light);">
-                    <div style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;">Readiness Score</div>
-                    <div style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: var(--brand-blue); margin: 4px 0;">78%</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary);">Practice estimate</div>
+
+                <div class="live-stat-box">
+                    <div class="stat-label">
+                        <i data-lucide="building-2" style="width: 15px; height: 15px; color: var(--warning-orange);"></i>
+                        <span>Company Tracks</span>
+                    </div>
+                    <div class="stat-number">{{ company_count }}</div>
+                    <div class="stat-badge" style="color: var(--warning-orange);">Recruitment Guides</div>
                 </div>
             </div>
+
+            <!-- Live Coding Problems Quick Preview -->
+            <div style="background: var(--bg-primary); border-radius: var(--radius-md); padding: 16px 20px; border: 1px solid var(--border-light);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-navy);">Featured Live Coding Challenges</span>
+                    <a href="{{ url_for('coding.index') }}" style="font-size: 0.8rem; font-weight: 600;">View all {{ coding_count }} problems &rarr;</a>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    {% for c in featured_challenges %}
+                    <a href="{{ url_for('coding.solve', slug=c.slug) }}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #FFFFFF; border: 1px solid var(--border-light); border-radius: var(--radius-sm); color: var(--text-navy);">
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.85rem;">{{ c.title }}</div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);">{{ c.topic }}</div>
+                        </div>
+                        <span style="font-size: 0.72rem; font-weight: 700; color: {% if c.difficulty == 'Easy' %}var(--success-green){% elif c.difficulty == 'Medium' %}var(--warning-orange){% else %}var(--danger-red){% endif %};">
+                            {{ c.difficulty }}
+                        </span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recruiter Trust Strip -->
+    <section class="trust-section">
+        <div class="trust-title">TARGETED RECRUITMENT TRACKS &amp; SYLLABUS BREAKDOWNS</div>
+        <div class="trust-badges-wrap">
+            {% for comp in featured_companies %}
+            <a href="{{ url_for('companies.detail', slug=comp.slug) }}" class="trust-badge-pill">
+                <i data-lucide="building-2" style="width: 14px; height: 14px; color: var(--brand-blue);"></i>
+                <span>{{ comp.name }}</span>
+            </a>
+            {% endfor %}
         </div>
     </section>
 
     <!-- Features Section -->
     <section class="feature-grid-section" id="features">
         <div class="section-header-center">
-            <h2>Everything You Need in One Unified Hub</h2>
-            <p style="color: var(--text-secondary);">No more jumping between scattered websites, question PDFs, and outdated spreadsheets.</p>
+            <h2>Everything You Need in One Unified SaaS Hub</h2>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">No more jumping between scattered ad-heavy websites, question PDFs, and outdated spreadsheets.</p>
         </div>
 
         <div class="features-cards-grid">
-            <div class="card" style="padding: 24px;">
-                <div style="width: 42px; height: 42px; border-radius: 8px; background: var(--brand-blue-light); color: var(--brand-blue); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                    <i data-lucide="brain"></i>
+            <!-- Aptitude Arena -->
+            <div class="feature-card">
+                <div>
+                    <div class="feature-icon-container" style="background: var(--brand-blue-light); color: var(--brand-blue);">
+                        <i data-lucide="brain" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Aptitude Arena</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 20px;">
+                        <strong>{{ aptitude_count }}+</strong> mathematically verified original questions across Quantitative Aptitude, Logical Reasoning, and Verbal Ability with step-by-step derivations and shortcuts.
+                    </p>
                 </div>
-                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Aptitude Arena</h3>
-                <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">Over 100+ mathematically verified questions across Quantitative Aptitude, Logical Reasoning, and Verbal Ability with detailed solutions and shortcuts.</p>
+                <a href="{{ url_for('aptitude.index') }}" class="btn btn-outline" style="width: 100%;">Explore Aptitude Bank</a>
             </div>
 
-            <div class="card" style="padding: 24px;">
-                <div style="width: 42px; height: 42px; border-radius: 8px; background: var(--success-light); color: var(--success-green); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                    <i data-lucide="code-2"></i>
+            <!-- Coding Lab -->
+            <div class="feature-card">
+                <div>
+                    <div class="feature-icon-container" style="background: var(--success-light); color: var(--success-green);">
+                        <i data-lucide="code-2" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Coding Lab</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 20px;">
+                        <strong>{{ coding_count }}+</strong> algorithmic challenges from Arrays &amp; Strings to Dynamic Programming with safe Python AST isolation and automated test runners.
+                    </p>
                 </div>
-                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Coding Lab</h3>
-                <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">Curated placement coding challenges from Arrays to Dynamic Programming with test case execution and submission tracking.</p>
+                <a href="{{ url_for('coding.index') }}" class="btn btn-outline" style="width: 100%;">Enter Coding Lab</a>
             </div>
 
-            <div class="card" style="padding: 24px;">
-                <div style="width: 42px; height: 42px; border-radius: 8px; background: var(--purple-light); color: var(--purple-accent); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                    <i data-lucide="messages-square"></i>
+            <!-- Interview Room -->
+            <div class="feature-card">
+                <div>
+                    <div class="feature-icon-container" style="background: var(--purple-light); color: var(--purple-accent);">
+                        <i data-lucide="messages-square" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Interview Room</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 20px;">
+                        <strong>{{ interview_count }}+</strong> technical questions in OOP, DBMS, OS, Networks &amp; DSA, combined with structured behavioral HR questions using the STAR framework.
+                    </p>
                 </div>
-                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Interview Room</h3>
-                <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">Technical questions in OOP, DBMS, OS, Networks, and DSA, paired with proven behavioral and HR response frameworks.</p>
+                <a href="{{ url_for('interviews.index') }}" class="btn btn-outline" style="width: 100%;">Practice Interviews</a>
             </div>
 
-            <div class="card" style="padding: 24px;">
-                <div style="width: 42px; height: 42px; border-radius: 8px; background: var(--warning-light); color: var(--warning-orange); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                    <i data-lucide="building-2"></i>
+            <!-- Company Tracks -->
+            <div class="feature-card">
+                <div>
+                    <div class="feature-icon-container" style="background: var(--warning-light); color: var(--warning-orange);">
+                        <i data-lucide="building-2" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Recruiter Tracks</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 20px;">
+                        <strong>{{ company_count }}</strong> targeted corporate tracks including TCS, Infosys, Amazon, Microsoft, and Accenture with round patterns, eligibility cutoffs, and checklists.
+                    </p>
                 </div>
-                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Company-Specific Tracks</h3>
-                <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">Targeted recruitment process guides, pattern breakdowns, and preparation checklists for TCS, Infosys, Accenture, Amazon, and Microsoft.</p>
+                <a href="{{ url_for('companies.index') }}" class="btn btn-outline" style="width: 100%;">Browse Company Tracks</a>
             </div>
 
-            <div class="card" style="padding: 24px;">
-                <div style="width: 42px; height: 42px; border-radius: 8px; background: var(--danger-light); color: var(--danger-red); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                    <i data-lucide="timer"></i>
+            <!-- Timed Mock Tests -->
+            <div class="feature-card">
+                <div>
+                    <div class="feature-icon-container" style="background: var(--danger-light); color: var(--danger-red);">
+                        <i data-lucide="timer" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Timed Mock Assessments</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 20px;">
+                        <strong>{{ mock_test_count }}</strong> full-length placement test simulations with strict server-enforced countdown deadlines, question navigation palettes, and instant scorecards.
+                    </p>
                 </div>
-                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Timed Mock Tests</h3>
-                <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">Simulated real-world placement exam conditions with server-enforced timers, question palettes, and topic-wise analytics.</p>
+                <a href="{{ url_for('mock_tests.index') }}" class="btn btn-outline" style="width: 100%;">Take a Mock Test</a>
             </div>
 
-            <div class="card" style="padding: 24px;">
-                <div style="width: 42px; height: 42px; border-radius: 8px; background: #EEF4FF; color: #2B54B3; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-                    <i data-lucide="line-chart"></i>
+            <!-- Placement Readiness Analytics -->
+            <div class="feature-card">
+                <div>
+                    <div class="feature-icon-container" style="background: #EEF4FF; color: #2B54B3;">
+                        <i data-lucide="line-chart" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 10px;">Readiness Analytics</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6; margin-bottom: 20px;">
+                        A transparent 4-pillar placement readiness formula that quantifies preparation, pinpoints topic vulnerabilities, and tracks consistency over time with Chart.js trends.
+                    </p>
                 </div>
-                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Progress Analytics</h3>
-                <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">Transparent placement readiness scoring formula, topic accuracy heatmaps, daily streak tracking, and personalized next steps.</p>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline" style="width: 100%;">Track Your Readiness</a>
             </div>
+        </div>
+    </section>
+
+    <!-- SaaS Comparison Matrix -->
+    <section class="comparison-section">
+        <div class="section-header-center">
+            <h2>Why CampusPrep Over Traditional Prep</h2>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">Engineered from the ground up for college students facing real placement pressures.</p>
+        </div>
+
+        <div class="comparison-table-wrap">
+            <table class="comp-table">
+                <thead>
+                    <tr>
+                        <th style="width: 28%;">Preparation Feature</th>
+                        <th style="width: 36%;">Traditional Resources (Forums, PDFs, Random Sheets)</th>
+                        <th style="width: 36%; color: var(--brand-blue); background: #EEF4FD;">CampusPrep Unified Hub</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Aptitude Solutions</strong></td>
+                        <td>Bare option letters, frequent typos, ads and paywalls</td>
+                        <td style="color: var(--text-navy); font-weight: 600; background: #F8FAFD;">Step-by-step mathematical proofs &amp; exam shortcut tricks</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Coding Assessment</strong></td>
+                        <td>Static textboxes or unstructured random LeetCode lists</td>
+                        <td style="color: var(--text-navy); font-weight: 600; background: #F8FAFD;">AST-sandboxed test case execution with instant verdicts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mock Tests</strong></td>
+                        <td>Self-timed honor system, unverified scores</td>
+                        <td style="color: var(--text-navy); font-weight: 600; background: #F8FAFD;">Server-enforced deadlines, auto-save, detailed scorecards</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Progress Tracking</strong></td>
+                        <td>Subjective guesswork and scattered mental notes</td>
+                        <td style="color: var(--text-navy); font-weight: 600; background: #F8FAFD;">4-pillar quantitative Placement Readiness score &amp; heatmaps</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 
@@ -423,49 +839,56 @@
     <section class="how-it-works-section">
         <div class="section-header-center">
             <h2>How CampusPrep Works</h2>
-            <p style="color: var(--text-secondary);">A clear, systematic 4-step path to placement success.</p>
+            <p style="color: var(--text-secondary); font-size: 1.05rem;">A systematic 4-step path to placement confidence.</p>
         </div>
 
         <div class="steps-timeline-grid">
             <div class="step-card">
                 <div class="step-number">01</div>
-                <h4 style="font-size: 1.1rem; margin-bottom: 8px;">Create Your Account</h4>
-                <p style="color: var(--text-secondary); font-size: 0.88rem;">Sign up with your college and target roles to personalize your dashboard.</p>
+                <h4 style="font-size: 1.15rem; margin-bottom: 8px;">Create Your Profile</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">Sign up free with your graduation year and target job roles to personalize your dashboard.</p>
             </div>
             <div class="step-card">
                 <div class="step-number">02</div>
-                <h4 style="font-size: 1.1rem; margin-bottom: 8px;">Choose Preparation Topics</h4>
-                <p style="color: var(--text-secondary); font-size: 0.88rem;">Select from Quantitative, Logical, Verbal, Coding challenges, or specific company tracks.</p>
+                <h4 style="font-size: 1.15rem; margin-bottom: 8px;">Select Focus Modules</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">Choose between Aptitude Arena, Coding Lab, Interview Room, or specific recruiter tracks.</p>
             </div>
             <div class="step-card">
                 <div class="step-number">03</div>
-                <h4 style="font-size: 1.1rem; margin-bottom: 8px;">Practice and Improve</h4>
-                <p style="color: var(--text-secondary); font-size: 0.88rem;">Answer questions with immediate explanations, write code in the lab, and take timed mocks.</p>
+                <h4 style="font-size: 1.15rem; margin-bottom: 8px;">Practice with Feedback</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">Solve challenges, review detailed explanations, write code against test suites, and take timed mocks.</p>
             </div>
             <div class="step-card">
                 <div class="step-number">04</div>
-                <h4 style="font-size: 1.1rem; margin-bottom: 8px;">Track Placement Readiness</h4>
-                <p style="color: var(--text-secondary); font-size: 0.88rem;">Watch your readiness score climb as your consistency and topic accuracy improve.</p>
+                <h4 style="font-size: 1.15rem; margin-bottom: 8px;">Track Placement Score</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5;">Watch your Placement Readiness climb as consistency, coverage, and topic accuracy improve.</p>
             </div>
         </div>
     </section>
 
     <!-- Final Call to Action -->
     <section class="final-cta-section">
-        <h2>Start preparing for your next opportunity today.</h2>
-        <p>Join thousands of students turning campus placement anxiety into structured confidence.</p>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-lg" style="background:#ffffff; color:var(--brand-blue); border-color:#ffffff; font-weight:700;">
-            <span>Get Started Free</span>
-            <i data-lucide="arrow-right"></i>
-        </a>
+        <h2>Start preparing for your dream placement today.</h2>
+        <p>Join thousands of students turning campus hiring anxiety into structured preparation and confidence.</p>
+        <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-lg" style="background:#ffffff; color:var(--brand-blue); border-color:#ffffff; font-weight:700;">
+                <span>Get Started Free</span>
+                <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-lg" style="color: #ffffff !important; border-color: rgba(255,255,255,0.4);">
+                <span>Sign In to Existing Account</span>
+            </a>
+        </div>
     </section>
 
     <!-- Footer -->
     <footer class="landing-footer">
-        <div>&copy; {{ current_year }} CampusPrep. Built for College Placement Hackathon.</div>
-        <div style="display: flex; gap: 20px;">
+        <div>&copy; {{ current_year }} CampusPrep. Built for College Placement Preparation.</div>
+        <div style="display: flex; gap: 24px;">
             <a href="{{ url_for('auth.login') }}" style="color: var(--text-secondary);">Log In</a>
-            <a href="{{ url_for('auth.register') }}" style="color: var(--text-secondary);">Register</a>
+            <a href="{{ url_for('auth.register') }}" style="color: var(--text-secondary);">Register Free</a>
+            <a href="{{ url_for('aptitude.index') }}" style="color: var(--text-secondary);">Aptitude Bank</a>
+            <a href="{{ url_for('coding.index') }}" style="color: var(--text-secondary);">Coding Lab</a>
         </div>
     </footer>
 

@@ -57,10 +57,13 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and request.method == 'GET' and not request.args.get('switch'):
+        flash(f'You are already logged in as {current_user.email}.', 'info')
         return redirect(url_for('dashboard.index'))
 
     if request.method == 'POST':
+        if current_user.is_authenticated:
+            logout_user()
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
         remember = bool(request.form.get('remember'))

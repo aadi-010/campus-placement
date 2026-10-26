@@ -18,9 +18,22 @@
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%233567D6%22/><text y=%2268%22 x=%2250%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2258%22 font-weight=%22bold%22 fill=%22white%22>CP</text></svg>">
 
-    <!-- Lucide Icons & Chart.js -->
+    <!-- Lucide Icons, Chart.js & Supabase JS SDK -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        window.SUPABASE_CONFIG = {
+            url: "https://tcnktohuqrjzipnfnafw.supabase.co",
+            publishableKey: "sb_publishable_wSMMzkt_ado0gXqYPJW6RA_8Uj1FwUb"
+        };
+        if (window.supabase) {
+            window.supabaseClient = window.supabase.createClient(
+                window.SUPABASE_CONFIG.url,
+                window.SUPABASE_CONFIG.publishableKey
+            );
+        }
+    </script>
 
     {% block extra_head %}{% endblock %}
 </head>
@@ -79,6 +92,14 @@
                     <span>Profile &amp; Settings</span>
                 </a>
             </nav>
+
+            <div class="sidebar-cloud-badge" style="padding: 6px 14px; margin: 0 12px 10px 12px; background: rgba(30, 41, 59, 0.04); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);"></span>
+                    <span style="font-weight: 600; color: var(--color-text-main);">Supabase Cloud</span>
+                </div>
+                <span class="badge badge-success" style="font-size: 0.65rem; padding: 2px 6px;">Connected</span>
+            </div>
 
             <div class="sidebar-footer">
                 <div class="user-compact-pill">

@@ -30,18 +30,31 @@ class VercelPathMiddleware:
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
-        original_path = (
-            environ.get('HTTP_X_MATCHED_PATH') or
-            (environ.get('REQUEST_URI', '').split('?')[0] if environ.get('REQUEST_URI') else None) or
-            (environ.get('HTTP_REQUEST_URI', '').split('?')[0] if environ.get('HTTP_REQUEST_URI') else None) or
-            (environ.get('HTTP_X_REQUEST_URI', '').split('?')[0] if environ.get('HTTP_X_REQUEST_URI') else None) or
-            (environ.get('HTTP_X_FORWARDED_PATH', '').split('?')[0] if environ.get('HTTP_X_FORWARDED_PATH') else None)
-        )
+        from urllib.parse import parse_qs
+        qs = parse_qs(environ.get('QUERY_STRING', ''))
+        rewritten_path = qs.get('__path', [None])[0]
 
-        if original_path and not original_path.startswith('/api/index'):
-            environ['PATH_INFO'] = original_path
-        elif environ.get('PATH_INFO') in ('/api/index', '/api/index.py'):
-            environ['PATH_INFO'] = '/'
+        if rewritten_path:
+            environ['PATH_INFO'] = '/' + rewritten_path.lstrip('/')
+        else:
+            candidates = [
+                environ.get('REQUEST_URI', ''),
+                environ.get('HTTP_X_FORWARDED_PATH', ''),
+                environ.get('RAW_URI', ''),
+                environ.get('HTTP_X_REQUEST_URI', ''),
+                environ.get('HTTP_X_MATCHED_PATH', '')
+            ]
+            resolved = None
+            for cand in candidates:
+                if cand:
+                    p = cand.split('?')[0]
+                    if p and not p.startswith('/api/index') and not p.startswith('/api/index.py'):
+                        resolved = p
+                        break
+            if resolved:
+                environ['PATH_INFO'] = resolved
+            elif environ.get('PATH_INFO') in ('/api/index', '/api/index.py'):
+                environ['PATH_INFO'] = '/'
 
         return self.wsgi_app(environ, start_response)
 
