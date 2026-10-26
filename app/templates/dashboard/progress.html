@@ -178,7 +178,7 @@
       <div>
         <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); font-weight: 600; margin-bottom: 4px;">
           <span style="color: var(--color-success);">Easy ({{ coding_stats.easy_solved }}/{{ coding_stats.easy_total }})</span>
-          <span>{% if coding_stats.easy_total %}{{ int((coding_stats.easy_solved / coding_stats.easy_total) * 100) }}%{% else %}0%{% endif %}</span>
+          <span>{% if coding_stats.easy_total %}{{ ((coding_stats.easy_solved / coding_stats.easy_total) * 100)|int }}%{% else %}0%{% endif %}</span>
         </div>
         <div class="progress-bar-container" style="height: 6px; background: #E2E8F0; border-radius: 999px;">
           <div class="progress-bar-fill" style="width: {% if coding_stats.easy_total %}{{ (coding_stats.easy_solved / coding_stats.easy_total) * 100 }}%{% else %}0%{% endif %}; height: 100%; background: var(--color-success);"></div>
@@ -188,7 +188,7 @@
       <div>
         <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); font-weight: 600; margin-bottom: 4px;">
           <span style="color: var(--color-warning);">Medium ({{ coding_stats.medium_solved }}/{{ coding_stats.medium_total }})</span>
-          <span>{% if coding_stats.medium_total %}{{ int((coding_stats.medium_solved / coding_stats.medium_total) * 100) }}%{% else %}0%{% endif %}</span>
+          <span>{% if coding_stats.medium_total %}{{ ((coding_stats.medium_solved / coding_stats.medium_total) * 100)|int }}%{% else %}0%{% endif %}</span>
         </div>
         <div class="progress-bar-container" style="height: 6px; background: #E2E8F0; border-radius: 999px;">
           <div class="progress-bar-fill" style="width: {% if coding_stats.medium_total %}{{ (coding_stats.medium_solved / coding_stats.medium_total) * 100 }}%{% else %}0%{% endif %}; height: 100%; background: var(--color-warning);"></div>
@@ -198,7 +198,7 @@
       <div>
         <div style="display: flex; justify-content: space-between; font-size: var(--text-xs); font-weight: 600; margin-bottom: 4px;">
           <span style="color: var(--color-danger);">Hard ({{ coding_stats.hard_solved }}/{{ coding_stats.hard_total }})</span>
-          <span>{% if coding_stats.hard_total %}{{ int((coding_stats.hard_solved / coding_stats.hard_total) * 100) }}%{% else %}0%{% endif %}</span>
+          <span>{% if coding_stats.hard_total %}{{ ((coding_stats.hard_solved / coding_stats.hard_total) * 100)|int }}%{% else %}0%{% endif %}</span>
         </div>
         <div class="progress-bar-container" style="height: 6px; background: #E2E8F0; border-radius: 999px;">
           <div class="progress-bar-fill" style="width: {% if coding_stats.hard_total %}{{ (coding_stats.hard_solved / coding_stats.hard_total) * 100 }}%{% else %}0%{% endif %}; height: 100%; background: var(--color-danger);"></div>

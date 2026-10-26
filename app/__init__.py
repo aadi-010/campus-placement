@@ -43,7 +43,16 @@ def create_app(config_name=None):
     # Exclude API endpoints from CSRF if using Fetch/JSON headers with X-CSRFToken
     # Note: Flask-WTF CSRFProtect checks request header 'X-CSRFToken' automatically!
 
-    # Global context processors for Jinja2
+    # Global context processors and Jinja globals
+    app.jinja_env.globals.update(
+        int=int,
+        round=round,
+        max=max,
+        min=min,
+        len=len,
+        str=str
+    )
+
     @app.context_processor
     def inject_global_vars():
         from datetime import datetime
