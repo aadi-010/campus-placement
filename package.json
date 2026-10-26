@@ -1,0 +1,21 @@
+{
+  "name": "gemma-4-arena",
+  "version": "1.0.0",
+  "description": "Gemma 4 Arena — Dual-mode AI Workbench comparing Google Cloud API (gemma-4-26b-a4b-it) and Local Ollama (gemma4)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "gemma",
+    "gemma-4",
+    "gemma-4-26b-a4b-it",
+    "ollama",
+    "gemini-api",
+    "deepmind",
+    "moe"
+  ],
+  "author": "",
+  "license": "Apache-2.0"
+}
