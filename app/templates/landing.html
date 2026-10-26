@@ -5,10 +5,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CampusPrep — Prepare Smarter. Practice Better. Get Placed.</title>
     <meta name="description" content="Unified campus placement preparation platform for college students. Master aptitude, practice coding, ace technical & HR interviews.">
+    <!-- Google Fonts Preconnect and Link -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%233567D6%22/><text y=%2268%22 x=%2250%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2258%22 font-weight=%22bold%22 fill=%22white%22>CP</text></svg>">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        :root {
+            --bg-primary: #F7F9FC;
+            --surface-main: #FFFFFF;
+            --surface-hover: #F2F5F9;
+            --surface-active: #E9EDF5;
+            --brand-blue: #3567D6;
+            --brand-blue-hover: #2B54B3;
+            --brand-blue-light: #EEF3FD;
+            --text-navy: #182230;
+            --text-secondary: #788394;
+            --text-muted: #9BA6B5;
+            --border-light: #E9EDF3;
+            --border-focus: #3567D6;
+            --success-green: #21966B;
+            --success-light: #EAF7F1;
+            --warning-orange: #C87A25;
+            --warning-light: #FDF4EB;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-full: 9999px;
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-heading: 'Manrope', 'DM Sans', -apple-system, sans-serif;
+            --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.05);
+            --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+            --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.08), 0 2px 4px -2px rgba(16, 24, 40, 0.04);
+            --shadow-lg: 0 12px 24px -4px rgba(16, 24, 40, 0.08);
+        }
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-primary);
+            color: var(--text-navy);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            color: var(--text-navy);
+            font-weight: 700;
+        }
+        a {
+            color: var(--brand-blue);
+            text-decoration: none;
+        }
+        .brand-icon-box {
+            width: 34px;
+            height: 34px;
+            background: var(--brand-blue);
+            color: #ffffff;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            box-shadow: var(--shadow-sm);
+        }
+        .brand-text {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 1.15rem;
+            letter-spacing: -0.02em;
+            color: var(--text-navy);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 16px;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            user-select: none;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background-color: var(--brand-blue);
+            color: #ffffff !important;
+            border-color: var(--brand-blue);
+        }
+        .btn-primary:hover {
+            background-color: var(--brand-blue-hover);
+            color: #ffffff !important;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-secondary {
+            background-color: var(--surface-main);
+            color: var(--text-navy) !important;
+            border-color: var(--border-light);
+        }
+        .btn-secondary:hover {
+            background-color: var(--surface-hover);
+            border-color: #D6DFEB;
+        }
+        .btn-outline {
+            background-color: transparent;
+            color: var(--brand-blue) !important;
+            border-color: var(--border-light);
+        }
+        .btn-outline:hover {
+            background-color: var(--surface-hover);
+        }
+        .btn-lg {
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: var(--radius-md);
+        }
+        .card {
+            background: var(--surface-main);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xs);
+        }
         .landing-nav {
             height: 72px;
             padding: 0 40px;

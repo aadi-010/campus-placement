@@ -54,6 +54,20 @@ app.wsgi_app = VercelPathMiddleware(app.wsgi_app)
 def vercel_entry_fallback():
     return app.view_functions['main.index']()
 
+# Fallback route handler for static files in serverless environment
+from flask import send_from_directory
+
+@app.route('/static/<path:filename>')
+def vercel_static_fallback(filename):
+    static_dirs = [
+        os.path.join(ROOT_DIR, 'public', 'static'),
+        os.path.join(ROOT_DIR, 'app', 'static')
+    ]
+    for d in static_dirs:
+        if os.path.exists(os.path.join(d, filename)):
+            return send_from_directory(d, filename)
+    return send_from_directory(static_dirs[0], filename)
+
 # Ensure database tables and initial seed data exist on serverless cold starts
 with app.app_context():
     try:
