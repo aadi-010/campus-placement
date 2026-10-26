@@ -9,6 +9,13 @@
             <p style="color: var(--text-secondary); font-size: 0.9rem;">Log in to continue your placement preparation</p>
         </div>
 
+        {% if request.args.get('next') %}
+        <div style="margin-bottom: 18px; padding: 10px 14px; background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 8px; font-size: 0.84rem; color: #1E40AF; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="lock" style="width: 16px; height: 16px; flex-shrink: 0;"></i>
+            <span>Log in to track your scores, save answers, and view placement readiness.</span>
+        </div>
+        {% endif %}
+
         <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 

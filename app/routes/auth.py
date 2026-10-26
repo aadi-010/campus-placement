@@ -73,8 +73,33 @@ def login():
             return render_template('auth/login.html', email=email)
 
         user = User.query.filter_by(email=email).first()
-        if not user or not user.check_password(password):
-            flash('Invalid email or password. Please try again.', 'danger')
+        if not user:
+            # Auto-register new students on first login attempt if password is valid
+            if len(password) >= 6:
+                display_name = email.split('@')[0].replace('.', ' ').replace('_', ' ').title()
+                user = User(
+                    full_name=display_name,
+                    email=email,
+                    target_role='Software Engineer'
+                )
+                user.set_password(password)
+                db.session.add(user)
+                db.session.commit()
+                login_user(user, remember=remember)
+                flash(f'Account created successfully! Welcome to CampusPrep, {user.full_name}.', 'success')
+
+                next_page = request.args.get('next')
+                if next_page and next_page.startswith('/'):
+                    if '?__path=' in next_page:
+                        next_page = next_page.split('?__path=')[0]
+                    return redirect(next_page)
+                return redirect(url_for('dashboard.index'))
+            else:
+                flash('No account found for this email. Password must be at least 6 characters to register.', 'danger')
+                return render_template('auth/login.html', email=email)
+
+        if not user.check_password(password):
+            flash('Incorrect password for this account. Please verify or use the One-Click Demo Student Login below.', 'danger')
             return render_template('auth/login.html', email=email)
 
         login_user(user, remember=remember)
@@ -82,6 +107,8 @@ def login():
         
         next_page = request.args.get('next')
         if next_page and next_page.startswith('/'):
+            if '?__path=' in next_page:
+                next_page = next_page.split('?__path=')[0]
             return redirect(next_page)
         return redirect(url_for('dashboard.index'))
 

@@ -37,11 +37,9 @@ else:
 def get_database_uri():
     raw_url = os.environ.get('DATABASE_URL')
     
-    # If DATABASE_URL is not set but SUPABASE_URL is provided, auto-configure Supabase pooler
-    if not raw_url and os.environ.get('SUPABASE_URL'):
-        supa_url = os.environ.get('SUPABASE_URL')
-        if 'tcnktohuqrjzipnfnafw' in supa_url:
-            raw_url = 'postgresql+psycopg://campusprep_admin.tcnktohuqrjzipnfnafw:CampusPrep_2026_SecurePass!@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require'
+    supa_url = os.environ.get('SUPABASE_URL', 'https://tcnktohuqrjzipnfnafw.supabase.co')
+    if not raw_url and 'tcnktohuqrjzipnfnafw' in supa_url:
+        raw_url = 'postgresql+psycopg://campusprep_admin.tcnktohuqrjzipnfnafw:CampusPrep_2026_SecurePass!@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require'
 
     if raw_url:
         # Convert legacy postgres:// to postgresql://

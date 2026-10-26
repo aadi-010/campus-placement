@@ -30,9 +30,10 @@ class VercelPathMiddleware:
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
-        from urllib.parse import parse_qs
+        from urllib.parse import parse_qs, urlencode
         qs = parse_qs(environ.get('QUERY_STRING', ''))
-        rewritten_path = qs.get('__path', [None])[0]
+        rewritten_path = qs.pop('__path', [None])[0]
+        environ['QUERY_STRING'] = urlencode(qs, doseq=True)
 
         if rewritten_path:
             environ['PATH_INFO'] = '/' + rewritten_path.lstrip('/')
