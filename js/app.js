@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const attachmentFileName = document.getElementById('attachmentFileName');
   const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
   const clearChatBtn = document.getElementById('clearChatBtn');
+  const runDemoPresetBtn = document.getElementById('runDemoPresetBtn');
 
   // Settings Modal Elements
   const settingsBtn = document.getElementById('settingsBtn');
@@ -84,10 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateCloudStatusBadge() {
     if (googleClient.getApiKey()) {
       cloudStatusDot.className = 'status-dot active-cloud';
-      cloudStatusDot.parentElement.title = 'Google Cloud API Key Configured';
+      const isOR = googleClient.isOpenRouterKey();
+      cloudStatusDot.parentElement.title = isOR ? 'OpenRouter API Key Configured' : 'Google Cloud API Key Configured';
+      const label = cloudStatusDot.parentElement.querySelector('span:last-child');
+      if (label) label.innerText = isOR ? 'OpenRouter API' : 'Google API';
     } else {
       cloudStatusDot.className = 'status-dot warning';
-      cloudStatusDot.parentElement.title = 'Click Settings to add your Google API Key';
+      cloudStatusDot.parentElement.title = 'Click Settings to add your Google or OpenRouter API Key';
     }
   }
 
@@ -168,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 5. Preset Chips & Suggestion Chips
-  document.querySelectorAll('.preset-chip').forEach(btn => {
+  document.querySelectorAll('.preset-chip[data-preset]').forEach(btn => {
     btn.addEventListener('click', () => {
       const presetKey = btn.getAttribute('data-preset');
       const preset = window.GEMMA_PRESETS && window.GEMMA_PRESETS[presetKey];
@@ -179,6 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  if (runDemoPresetBtn) {
+    runDemoPresetBtn.addEventListener('click', () => {
+      promptInput.value = "Explain Gemma 4's Mixture-of-Experts (MoE) routing dynamics and active parameter efficiency.";
+      adjustPromptHeight();
+      executePrompt(true); // force demo mode simulation
+    });
+  }
 
   document.querySelectorAll('.quick-chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -299,6 +311,133 @@ document.addEventListener('DOMContentLoaded', () => {
         bubble.innerHTML = window.MarkdownRenderer ? window.MarkdownRenderer.render(content) : content;
         feed.scrollTop = feed.scrollHeight;
       },
+      setInteractiveApiKeyCard: (promptText) => {
+        bubble.innerHTML = `
+          <div style="padding: 12px 14px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px;">
+            <div style="font-weight: 600; color: #93c5fd; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>🔑 Google Cloud or OpenRouter API Key</span>
+            </div>
+            <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 10px;">
+              Paste your Google AI Studio key (<code>AIzaSy...</code>) or OpenRouter key (<code>sk-or-v1-...</code>) to stream <code>gemma-4-26b-a4b-it</code>:
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+              <input type="password" id="inlineKeyInput_${Date.now()}" class="form-input inline-key-input" style="flex: 1; padding: 7px 10px; font-size: 0.82rem;" placeholder="AIzaSy... or sk-or-v1-...">
+              <button class="btn-primary inline-key-save-btn" style="padding: 7px 14px; font-size: 0.82rem; white-space: nowrap;">Save &amp; Run</button>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.74rem; flex-wrap: wrap; gap: 6px;">
+              <span style="color: var(--text-secondary);">
+                Get key: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color: #60a5fa; text-decoration: underline;">Google AI Studio (Free)</a> or <a href="https://openrouter.ai/keys" target="_blank" rel="noopener" style="color: #c084fc; text-decoration: underline;">OpenRouter</a>
+              </span>
+              <button class="inline-demo-btn" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.74rem;">▶ Try Interactive Demo</button>
+            </div>
+          </div>
+        `;
+
+        const input = bubble.querySelector('.inline-key-input');
+        const saveBtn = bubble.querySelector('.inline-key-save-btn');
+        const demoBtn = bubble.querySelector('.inline-demo-btn');
+
+        saveBtn.addEventListener('click', () => {
+          const val = input.value.trim();
+          if (val) {
+            googleClient.setApiKey(val);
+            googleApiKeyInput.value = val;
+            updateCloudStatusBadge();
+            bubble.innerHTML = '<span class="status-dot" style="display:inline-block; animation: pulse 1s infinite;"></span> <em style="color: var(--text-muted)">Key saved. Starting generation...</em>';
+            executePrompt();
+          } else {
+            input.focus();
+          }
+        });
+
+        demoBtn.addEventListener('click', () => {
+          bubble.innerHTML = '<span class="status-dot" style="display:inline-block; animation: pulse 1s infinite;"></span> <em style="color: var(--text-muted)">Streaming simulated Gemma 4 MoE response...</em>';
+          googleClient.simulateDemo({
+            onThought: (th) => {
+              reasoningBlock.style.display = 'block';
+              reasoningBlock.querySelector('.reasoning-content').innerText = th;
+              feed.scrollTop = feed.scrollHeight;
+            },
+            onToken: (tok, acc, telemetry) => {
+              bubble.innerHTML = window.MarkdownRenderer ? window.MarkdownRenderer.render(acc) : acc;
+              cloudSpeed.innerText = telemetry.speed;
+              cloudDuration.innerText = telemetry.duration;
+              cloudTokens.innerText = telemetry.tokens;
+              feed.scrollTop = feed.scrollHeight;
+            },
+            onComplete: (acc, telemetry) => {
+              bubble.innerHTML = window.MarkdownRenderer ? window.MarkdownRenderer.render(acc) : acc;
+              cloudTtft.innerText = telemetry.ttft;
+              cloudSpeed.innerText = telemetry.speed;
+              cloudDuration.innerText = telemetry.duration;
+              cloudTokens.innerText = telemetry.tokens;
+            }
+          });
+        });
+
+        feed.scrollTop = feed.scrollHeight;
+      },
+      setInteractiveOllamaCard: () => {
+        bubble.innerHTML = `
+          <div style="padding: 12px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px;">
+            <div style="font-weight: 600; color: #34d399; margin-bottom: 6px;">🖥️ Local Ollama Setup (127.0.0.1:11434)</div>
+            <div style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 8px;">
+              Could not reach local daemon at <code>${ollamaClient.endpoint}</code>. To start:
+            </div>
+            <div style="background: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.76rem; color: #a7f3d0; margin-bottom: 10px; line-height: 1.6;">
+              1. Run in terminal: <code>ollama serve</code><br>
+              2. Pull model: <code>ollama pull ${ollamaClient.model}</code>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn-secondary inline-ollama-check-btn" style="font-size: 0.78rem; padding: 5px 12px;">🔄 Check Connection</button>
+              <button class="inline-ollama-demo-btn" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; font-size: 0.78rem; padding: 5px 12px; border-radius: 6px; cursor: pointer;">▶ Try Simulated Local Stream</button>
+            </div>
+          </div>
+        `;
+
+        const checkBtn = bubble.querySelector('.inline-ollama-check-btn');
+        const demoBtn = bubble.querySelector('.inline-ollama-demo-btn');
+
+        checkBtn.addEventListener('click', async () => {
+          checkBtn.innerText = 'Checking...';
+          const res = await ollamaClient.checkHealth();
+          if (res.online) {
+            checkBtn.innerText = 'Online!';
+            checkOllamaHealth();
+            setTimeout(() => executePrompt(), 500);
+          } else {
+            checkBtn.innerText = 'Still Offline';
+            setTimeout(() => checkBtn.innerText = '🔄 Check Connection', 2000);
+          }
+        });
+
+        demoBtn.addEventListener('click', () => {
+          bubble.innerHTML = '<span class="status-dot" style="display:inline-block; animation: pulse 1s infinite;"></span> <em style="color: var(--text-muted)">Streaming simulated Local Ollama response...</em>';
+          googleClient.simulateDemo({
+            onThought: (th) => {
+              reasoningBlock.style.display = 'block';
+              reasoningBlock.querySelector('.reasoning-content').innerText = th;
+              feed.scrollTop = feed.scrollHeight;
+            },
+            onToken: (tok, acc, telemetry) => {
+              bubble.innerHTML = window.MarkdownRenderer ? window.MarkdownRenderer.render(acc) : acc;
+              ollamaSpeed.innerText = '68.4 tok/s';
+              ollamaDuration.innerText = telemetry.duration;
+              ollamaTokens.innerText = telemetry.tokens;
+              feed.scrollTop = feed.scrollHeight;
+            },
+            onComplete: (acc, telemetry) => {
+              bubble.innerHTML = window.MarkdownRenderer ? window.MarkdownRenderer.render(acc) : acc;
+              ollamaTtft.innerText = '85 ms';
+              ollamaSpeed.innerText = '71.2 tok/s';
+              ollamaDuration.innerText = telemetry.duration;
+              ollamaTokens.innerText = telemetry.tokens;
+            }
+          });
+        });
+
+        feed.scrollTop = feed.scrollHeight;
+      },
       setError: (errMsg) => {
         bubble.innerHTML = `<span style="color: var(--gemma-danger)">⚠️ ${window.MarkdownRenderer ? window.MarkdownRenderer.escapeHtml(errMsg) : errMsg}</span>`;
       }
@@ -306,21 +445,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 8. Main Execution Orchestrator
-  async function executePrompt() {
+  async function executePrompt(forceDemo = false) {
     const text = promptInput.value.trim();
-    if (!text && !currentAttachment) return;
+    if (!text && !currentAttachment && !forceDemo) return;
 
     const promptText = text || "Describe this image in detail.";
     const attachment = currentAttachment;
 
-    // Reset prompt box & attachment staging
     promptInput.value = '';
     adjustPromptHeight();
     currentAttachment = null;
     imageFileInput.value = '';
     attachmentStaging.style.display = 'none';
 
-    // Hide empty state hints
     if (cloudEmptyState) cloudEmptyState.style.display = 'none';
     if (ollamaEmptyState) ollamaEmptyState.style.display = 'none';
 
@@ -336,49 +473,69 @@ document.addEventListener('DOMContentLoaded', () => {
       appendUserMessage(cloudMessageFeed, promptText, attachment);
       const cloudCard = createModelMessageCard(cloudMessageFeed, 'Google Cloud');
 
-      // Reset Telemetry display
       cloudTtft.innerText = '...';
       cloudSpeed.innerText = '...';
       cloudDuration.innerText = '...';
       cloudTokens.innerText = '...';
 
-      const cloudTask = googleClient.generateStream({
-        prompt: promptText,
-        systemInstruction: systemPrompt,
-        thinkingLevel: thinkingLevel,
-        imageAttachment: attachment,
-        onTtft: (ttft) => {
-          cloudTtft.innerText = ttft + ' ms';
-        },
-        onThought: (thought) => {
-          cloudCard.updateThought(thought);
-        },
-        onToken: (token, fullText, telemetry) => {
-          cloudCard.updateContent(fullText);
-          cloudSpeed.innerText = telemetry.speed;
-          cloudDuration.innerText = telemetry.duration;
-          cloudTokens.innerText = telemetry.tokens;
-        },
-        onComplete: (fullText, telemetry) => {
-          cloudCard.updateContent(fullText);
-          if (telemetry.thought) {
-            cloudCard.updateThought(telemetry.thought);
-            cloudCard.reasoningBlock.classList.add('collapsed');
-            cloudCard.reasoningBlock.querySelector('.toggle-icon').innerText = '▶';
+      if (forceDemo) {
+        const demoTask = googleClient.simulateDemo({
+          onThought: (th) => cloudCard.updateThought(th),
+          onToken: (tok, acc, telemetry) => {
+            cloudCard.updateContent(acc);
+            cloudSpeed.innerText = telemetry.speed;
+            cloudDuration.innerText = telemetry.duration;
+            cloudTokens.innerText = telemetry.tokens;
+          },
+          onComplete: (acc, telemetry) => {
+            cloudCard.updateContent(acc);
+            cloudTtft.innerText = telemetry.ttft;
+            cloudSpeed.innerText = telemetry.speed;
+            cloudDuration.innerText = telemetry.duration;
+            cloudTokens.innerText = telemetry.tokens;
           }
-          cloudTtft.innerText = telemetry.ttft;
-          cloudSpeed.innerText = telemetry.speed;
-          cloudDuration.innerText = telemetry.duration;
-          cloudTokens.innerText = telemetry.tokens;
-        },
-        onError: (err) => {
-          cloudCard.setError(err.message);
-          if (!googleClient.getApiKey()) {
-            openSettings();
+        });
+        tasks.push(demoTask);
+      } else {
+        const cloudTask = googleClient.generateStream({
+          prompt: promptText,
+          systemInstruction: systemPrompt,
+          thinkingLevel: thinkingLevel,
+          imageAttachment: attachment,
+          onTtft: (ttft) => {
+            cloudTtft.innerText = ttft + ' ms';
+          },
+          onThought: (thought) => {
+            cloudCard.updateThought(thought);
+          },
+          onToken: (token, fullText, telemetry) => {
+            cloudCard.updateContent(fullText);
+            cloudSpeed.innerText = telemetry.speed;
+            cloudDuration.innerText = telemetry.duration;
+            cloudTokens.innerText = telemetry.tokens;
+          },
+          onComplete: (fullText, telemetry) => {
+            cloudCard.updateContent(fullText);
+            if (telemetry.thought) {
+              cloudCard.updateThought(telemetry.thought);
+              cloudCard.reasoningBlock.classList.add('collapsed');
+              cloudCard.reasoningBlock.querySelector('.toggle-icon').innerText = '▶';
+            }
+            cloudTtft.innerText = telemetry.ttft;
+            cloudSpeed.innerText = telemetry.speed;
+            cloudDuration.innerText = telemetry.duration;
+            cloudTokens.innerText = telemetry.tokens;
+          },
+          onError: (err) => {
+            if (err.isMissingKey || !googleClient.getApiKey()) {
+              cloudCard.setInteractiveApiKeyCard(promptText);
+            } else {
+              cloudCard.setError(err.message);
+            }
           }
-        }
-      });
-      tasks.push(cloudTask);
+        });
+        tasks.push(cloudTask);
+      }
     }
 
     // Target 2: Local Ollama Gemma
@@ -386,45 +543,64 @@ document.addEventListener('DOMContentLoaded', () => {
       appendUserMessage(ollamaMessageFeed, promptText, attachment);
       const ollamaCard = createModelMessageCard(ollamaMessageFeed, 'Local Ollama');
 
-      // Reset Telemetry display
       ollamaTtft.innerText = '...';
       ollamaSpeed.innerText = '...';
       ollamaDuration.innerText = '...';
       ollamaTokens.innerText = '...';
 
-      const ollamaTask = ollamaClient.generateStream({
-        prompt: promptText,
-        systemInstruction: systemPrompt,
-        imageAttachment: attachment,
-        onTtft: (ttft) => {
-          ollamaTtft.innerText = ttft + ' ms';
-        },
-        onThought: (thought) => {
-          ollamaCard.updateThought(thought);
-        },
-        onToken: (token, fullText, telemetry) => {
-          ollamaCard.updateContent(fullText);
-          ollamaSpeed.innerText = telemetry.speed;
-          ollamaDuration.innerText = telemetry.duration;
-          ollamaTokens.innerText = telemetry.tokens;
-        },
-        onComplete: (fullText, telemetry) => {
-          ollamaCard.updateContent(fullText);
-          if (telemetry.thought) {
-            ollamaCard.updateThought(telemetry.thought);
-            ollamaCard.reasoningBlock.classList.add('collapsed');
-            ollamaCard.reasoningBlock.querySelector('.toggle-icon').innerText = '▶';
+      if (forceDemo) {
+        const ollamaDemoTask = googleClient.simulateDemo({
+          onThought: (th) => ollamaCard.updateThought(th),
+          onToken: (tok, acc, telemetry) => {
+            ollamaCard.updateContent(acc);
+            ollamaSpeed.innerText = '74.8 tok/s';
+            ollamaDuration.innerText = telemetry.duration;
+            ollamaTokens.innerText = telemetry.tokens;
+          },
+          onComplete: (acc, telemetry) => {
+            ollamaCard.updateContent(acc);
+            ollamaTtft.innerText = '72 ms';
+            ollamaSpeed.innerText = '76.1 tok/s';
+            ollamaDuration.innerText = telemetry.duration;
+            ollamaTokens.innerText = telemetry.tokens;
           }
-          ollamaTtft.innerText = telemetry.ttft;
-          ollamaSpeed.innerText = telemetry.speed;
-          ollamaDuration.innerText = telemetry.duration;
-          ollamaTokens.innerText = telemetry.tokens;
-        },
-        onError: (err) => {
-          ollamaCard.setError(err.message);
-        }
-      });
-      tasks.push(ollamaTask);
+        });
+        tasks.push(ollamaDemoTask);
+      } else {
+        const ollamaTask = ollamaClient.generateStream({
+          prompt: promptText,
+          systemInstruction: systemPrompt,
+          imageAttachment: attachment,
+          onTtft: (ttft) => {
+            ollamaTtft.innerText = ttft + ' ms';
+          },
+          onThought: (thought) => {
+            ollamaCard.updateThought(thought);
+          },
+          onToken: (token, fullText, telemetry) => {
+            ollamaCard.updateContent(fullText);
+            ollamaSpeed.innerText = telemetry.speed;
+            ollamaDuration.innerText = telemetry.duration;
+            ollamaTokens.innerText = telemetry.tokens;
+          },
+          onComplete: (fullText, telemetry) => {
+            ollamaCard.updateContent(fullText);
+            if (telemetry.thought) {
+              ollamaCard.updateThought(telemetry.thought);
+              ollamaCard.reasoningBlock.classList.add('collapsed');
+              ollamaCard.reasoningBlock.querySelector('.toggle-icon').innerText = '▶';
+            }
+            ollamaTtft.innerText = telemetry.ttft;
+            ollamaSpeed.innerText = telemetry.speed;
+            ollamaDuration.innerText = telemetry.duration;
+            ollamaTokens.innerText = telemetry.tokens;
+          },
+          onError: (err) => {
+            ollamaCard.setInteractiveOllamaCard();
+          }
+        });
+        tasks.push(ollamaTask);
+      }
     }
 
     try {

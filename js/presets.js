@@ -33,3 +33,19 @@ What does Charlie answer, and what is Charlie's hat color? Explain your deductio
     prompt: `List the top 5 key architectural innovations in Google's Gemma 4 family. Keep each point to exactly two concise sentences so we can measure exact throughput and Time-To-First-Token (TTFT).`
   }
 };
+
+window.GEMMA_DEMO_DATA = {
+  thought: `1. Analyzing the user input: "hey".
+2. Intent: Greeting and initial connection verification.
+3. Architecture check: Operating in Gemma 4 MoE mode (~4B active parameters routed across 26B total parameters via top-8 fine-grained expert routing).
+4. Formulating response: Deliver a crisp, friendly greeting, outline active workbench features, and prompt the user for their first query or benchmark test.`,
+  content: `Hello! 👋 I'm **Gemma 4**, Google DeepMind's open Mixture-of-Experts (MoE) model running with native Chain-of-Thought reasoning.
+
+The **Gemma 4 Arena Workbench** is operational:
+- **Cloud API (`gemma-4-26b-a4b-it`)**: High-throughput MoE with DeepMind reasoning.
+- **Local Ollama (`gemma4`)**: Privacy-first, local zero-cloud inference at \`127.0.0.1:11434\`.
+- **Side-by-Side Arena**: Compare latency (TTFT), tokens/sec, and thought depth.
+
+Feel free to try the **presets** above or ask a complex logic, coding, or science question!`
+};
+
