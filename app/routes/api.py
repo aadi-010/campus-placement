@@ -130,12 +130,19 @@ def supabase_status():
     db_status = 'disconnected'
     db_info = {}
     try:
-        res = db.session.execute(text("SELECT current_database(), current_user, version()")).fetchone()
-        if res:
-            db_status = 'connected'
+        if db.engine.dialect.name.startswith('postgres'):
+            res = db.session.execute(text("SELECT current_database(), current_user, version()")).fetchone()
+            db_status = 'connected (cloud postgres)'
             db_info = {
                 'database': res[0],
                 'user': res[1],
+                'dialect': db.engine.dialect.name
+            }
+        else:
+            db_status = 'connected (local sqlite)'
+            db_info = {
+                'database': str(db.engine.url.database or 'campusprep.db'),
+                'user': 'local_user',
                 'dialect': db.engine.dialect.name
             }
     except Exception as e:
