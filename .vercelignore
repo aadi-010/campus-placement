@@ -1,0 +1,8 @@
+.git
+.gitignore
+.agents
+.gemini
+tests
+.pytest_cache
+*.log
+instance/*.db

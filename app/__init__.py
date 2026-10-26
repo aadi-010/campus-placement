@@ -15,6 +15,11 @@ def create_app(config_name=None):
     login_manager.init_app(app)
     csrf.init_app(app)
 
+    # Support reverse proxy headers on Vercel / Cloud deployments
+    if os.environ.get('VERCEL') or os.environ.get('BEHIND_PROXY'):
+        from werkzeug.middleware.proxy_fix import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
     # Register Blueprints
     from app.routes.main import main_bp
     from app.routes.auth import auth_bp

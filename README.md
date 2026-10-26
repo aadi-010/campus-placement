@@ -226,9 +226,41 @@ python -m pytest -v
 
 ---
 
-## 🌐 Production Deployment (Render)
+## 🌐 Production Deployment
 
-CampusPrep is ready for production deployment using Gunicorn and Render.
+### Option 1: Deploy to Vercel (Recommended — Serverless)
+
+CampusPrep is 100% pre-configured for Vercel deployment using serverless Python functions via [`vercel.json`](vercel.json) and [`api/index.py`](api/index.py).
+
+#### Via Vercel Dashboard (1-Click):
+1. Push your repository to GitHub.
+2. Go to [Vercel Dashboard](https://vercel.com/new) and click **Add New Project** -> **Import Git Repository**.
+3. Select your `campus-placement` repo.
+4. Framework Preset: Leave as **Other**.
+5. Add Environment Variables:
+   - `FLASK_ENV` = `production`
+   - `SECRET_KEY` = `<any-strong-random-key>`
+   - `DATABASE_URL` *(Optional, recommended for persistence)* = Your PostgreSQL connection string from [Supabase](https://supabase.com/) or [Neon](https://neon.tech/) (e.g., `postgresql://user:pass@host/db`).
+     > *Note:* If `DATABASE_URL` is omitted, CampusPrep uses a serverless `/tmp` SQLite database seeded automatically on first boot!
+6. Click **Deploy**.
+
+#### Via Vercel CLI:
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy preview
+vercel
+
+# Deploy to production
+vercel --prod
+```
+
+---
+
+### Option 2: Deploy to Render (Persistent Web Service)
+
+CampusPrep is also ready for continuous hosting on Render using Gunicorn:
 
 1. Connect your GitHub repository to [Render](https://render.com/).
 2. Select **Web Service** and choose **Python 3**.

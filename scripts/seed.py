@@ -28,8 +28,9 @@ from scripts.seed_data.companies import COMPANIES
 from scripts.seed_data.resources import RESOURCES
 from scripts.seed_data.mock_tests import MOCK_TESTS
 
-def seed_database():
-    app = create_app('development')
+def seed_database(app=None):
+    if app is None:
+        app = create_app()
     with app.app_context():
         print(" -> Creating database tables...")
         db.create_all()

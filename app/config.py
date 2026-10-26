@@ -1,16 +1,33 @@
 import os
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
-os.makedirs(INSTANCE_DIR, exist_ok=True)
+
+# Detect serverless environment (e.g. Vercel, AWS Lambda)
+IS_SERVERLESS = bool(os.environ.get('VERCEL') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME'))
+
+if IS_SERVERLESS:
+    INSTANCE_DIR = '/tmp'
+else:
+    INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
+    try:
+        os.makedirs(INSTANCE_DIR, exist_ok=True)
+    except OSError:
+        INSTANCE_DIR = '/tmp'
+
+def get_database_uri():
+    raw_url = os.environ.get('DATABASE_URL')
+    if raw_url:
+        # Convert deprecated postgres:// to postgresql:// for SQLAlchemy
+        if raw_url.startswith('postgres://'):
+            raw_url = raw_url.replace('postgres://', 'postgresql://', 1)
+        return raw_url
+    db_path = os.path.join(INSTANCE_DIR, 'campusprep.db')
+    return f"sqlite:///{db_path}"
 
 class Config:
     """Base application configuration."""
     SECRET_KEY = os.environ.get('SECRET_KEY', 'campusprep-hackathon-insecure-dev-secret-key-2026')
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
-        f"sqlite:///{os.path.join(INSTANCE_DIR, 'campusprep.db')}"
-    )
+    SQLALCHEMY_DATABASE_URI = get_database_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
